@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+// package acosim.messages;
+
+// index: 0
+message AcoSimCore {
+  uint32 id = 1;
+  string name = 2;
+  uint64 cpuFrequency = 3;
+  map<string, string> metadata = 4;
+}
+
+// index: 1
+message AcoSimTask {
+  uint32 taskId = 1;
+  string taskName = 2;
+  string taskDesc = 3;
+  map<string, string> metadata = 4;
+}
+
+// index: 2
+message AcoSimSwitchContext {
+  // Core Id
+  uint32 coreId = 1;
+  // Task that is going to be computed in this core, use 0 to present no task is in
+  uint32 pushTaskId = 2;
+  // Task that is leaving this core, use 0 to represent no task is out
+  uint32 popTaskId = 3;
+  uint64 switchStart = 4;
+  uint64 switchEnd = 5;
+  map<string, string> metadata = 6;
+}
+
+
+// index: 0
+message AcoSimCore {
+  uint32 id = 1;
+  string name = 2;
+  uint64 cpuFrequency = 3;
+  map<string, string> metadata = 4;
+}
+
+// index: 1
+message AcoSimTask {
+  uint32 taskId = 1;
+  uint32 taskPolicy = 2;
+  uint32 taskPrio = 3;
+  uint32 taskPeriod = 4;
+  uint32 taskSuperCycle = 5;
+  uint32 taskCoreId = 6;
+  uint32 taskCreateTick = 7;
+  string taskName = 8;
+  string taskDesc = 9;
+  map<string, string> metadata = 10;
+}
+
+// index: 2
+message AcoSimSwitchContext {
+  // Core Id
+  uint32 coreId = 1;
+  // Task that is going to be computed in this core, use 0 to present no task is in
+  uint32 fromTaskId = 2;
+  // Task that is leaving this core, use 0 to represent no task is out
+  uint32 toTaskId = 3;
+  uint64 switchStartTick = 4;
+  uint64 switchEndTick = 5;
+  map<string, string> metadata = 6;
+}

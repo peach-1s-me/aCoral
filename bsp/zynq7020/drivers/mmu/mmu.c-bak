@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include "platform.h"
+#include "xil_printf.h"
+
+int rt_hw_cpu_id(void);
+void rt_cpu_mmu_disable(void);
+void rt_cpu_mmu_enable(void);
+void rt_cpu_tlb_set(volatile unsigned long *);
+
+void rt_cpu_dcache_clean_flush(void);
+void rt_cpu_icache_flush(void);
+
+void rt_cpu_vector_set_base(unsigned int addr);
+
+#define __get_cp(cp, op1, Rt, CRn, CRm, op2) __asm__ volatile("MRC p" #cp ", " #op1 ", %0, c" #CRn ", c" #CRm ", " #op2 : "=r"(Rt) : : "memory")
+#define __set_cp(cp, op1, Rt, CRn, CRm, op2) __asm__ volatile("MCR p" #cp ", " #op1 ", %0, c" #CRn ", c" #CRm ", " #op2 : : "r"(Rt) : "memory")
+
+#define DESC_SEC (0x2)
+#define CB (3 << 2)     // cache_on, write_back
+#define CNB (2 << 2)    // cache_on, write_through
+#define NCB (1 << 2)    // cache_off,WR_BUF on
+#define NCNB (0 << 2)   // cache_off,WR_BUF off
+
+/* 内存访问权限 */
+#define AP_RW (3 << 10) // supervisor=RW, user=RW
+#define AP_RO (2 << 10) // supervisor=RW, user=RO
+#define XN (1 << 4)     // eXecute Never
+
+#define DOMAIN_FAULT (0x0)
+#define DOMAIN_CHK (0x1)
+#define DOMAIN_NOTCHK (0x3)
+#define DOMAIN0 (0x0 << 5)
+#define DOMAIN1 (0x1 << 5)
+
+#define DOMAIN0_ATTR (DOMAIN_CHK << 0)
+#define DOMAIN1_ATTR (DOMAIN_FAULT << 2)
+
+/* Read/Write, cache, write back */
+#define RW_CB (AP_RW | DOMAIN0 | CB | DESC_SEC)
+/* Read/Write, cache, write through */
+#define RW_CNB (AP_RW | DOMAIN0 | CNB | DESC_SEC)
+/* Read/Write without cache and write buffer */
+#define RW_NCNB (AP_RW | DOMAIN0 | NCNB | DESC_SEC)
+/* Read/Write without cache and write buffer, no execute */
+#define RW_NCNBXN (AP_RW | DOMAIN0 | NCNB | DESC_SEC | XN)
+/* Read/Write without cache and write buffer */
+#define RW_FAULT (AP_RW | DOMAIN1 | NCNB | DESC_SEC)
+
+volatile unsigned char testmem[1024] = {0};
+
+volatile static unsigned long MMUTable[4 * 1024] __attribute__((aligned(16 * 1024)));
+void mmu_set_L1table(u32 vaddrStart,
+                      u32 vaddrEnd,
+                      u32 paddrStart,
+                      u32 attr)
+{
+    volatile u32 *pTT;
+    volatile int i, nSec;
+    pTT = (u32 *)MMUTable + (vaddrStart >> 20);
+    nSec = (vaddrEnd >> 20) - (vaddrStart >> 20);
+    for (i = 0; i <= nSec; i++)
+    {
+        *pTT = attr | (((paddrStart >> 20) + i) << 20);
+        pTT++;
+    }
+}
+
+void init_mmu(void)
+{
+    rt_hw_cpu_dcache_disable();
+    rt_hw_cpu_icache_disable();
+    rt_cpu_mmu_disable();
+
+    /* set page table */
+    /* 4G 1:1 memory */
+    mmu_set_L1table(0, 1024, testmem, RW_CB);
+    /* IO memory region */
+    // mmu_set_L1table(0x44000000, 0x80000000 - 1, 0x44000000, RW_NCNBXN);
+
+    /*rt_hw_cpu_dump_page_table(MMUTable);*/
+    //    rt_hw_set_domain_register(0x55555555);
+
+    rt_cpu_tlb_set(MMUTable);
+
+    rt_cpu_mmu_enable();
+
+    rt_hw_cpu_icache_enable();
+    rt_hw_cpu_dcache_enable();
+}
+
+/**
+ * @brief
+ *
+ * @param  paddr            物理地址
+ * @param  vaddr            目标虚拟地址
+ * @return void*            真正的虚拟地址
+ */
+void *test_map(void *paddr, void *vaddr)
+{
+}
+
+void test_mmu(void)
+{
+    *((unsigned int*)testmem) = 0xdeadbeaf;
+    printf("*(0x%x)=%x\r\n", (unsigned int)&testmem, testmem[0]);
+
+    init_mmu();
+
+    printf("*(0x%x)=%x\r\n", (unsigned int)&testmem, testmem[0]);
+
+    // rt_cpu_mmu_enable();
+
+    //    unsigned *va = test_map(&a, 0xdead0000);
+
+    // printf("*(0x%x)=%x\r\n", (unsigned int)&a, a);
+    //    printf("*(0x%x)=%x\r\n", va, *va);
+}
