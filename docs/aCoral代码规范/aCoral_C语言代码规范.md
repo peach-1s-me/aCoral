@@ -167,6 +167,8 @@ matrix_transform(x1, x2, x3,
     }
 ```
 
+使用==判断时，将常量放于==左边，使用其他判断符时，变量放于左边。（循环中的判断也须遵循）
+
 ### <span id="2.7">2.7 循环</span>
 
 与条件语句类似循环体中仅有一条时，也必须要使用大括号，大括号的格式按照<a href="#2.3">2.3</a>。
@@ -230,11 +232,11 @@ switch 语句的 case/default 要缩进一层。`switch`和左小括号间留一
         64, 64, 64, 64, 32, 32, 32, 32
     };
     int array[][4] = {
-        { 1, 2, 3, 4 }, { 2, 2, 3, 4 }, // OK.
+        { 1, 2, 3, 4 }, { 2, 2, 3, 4 }, /* OK */
         { 3, 2, 3, 4 }, { 4, 2, 3, 4 }
     };
     
-    /* 指定初始化，每个成员的初始化单独一行*/
+    /* 指定初始化，每个成员的初始化单独一行 */
     typedef struct
     {
         int year;
@@ -266,13 +268,13 @@ switch 语句的 case/default 要缩进一层。`switch`和左小括号间留一
 
 #if condition_2
 
-#elif condition_3 // if  condition_2
+#elif condition_3 /* if  condition_2 */
 
-#else // if  condition_2
+#else  /* if  condition_3 */
 
-#endif // if condition_2
+#endif /* if condition_2 */
 
-#endif // if condition_1
+#endif /* if condition_1 */
 ```
 ### <span id="2.15">2.15 空格和空行</span>
 水平空格应该突出关键字和重要信息，每行代码尾部不要加空格。 总体规则如下：
@@ -413,13 +415,33 @@ void buddy_scan(void)
 
 避免函数的代码控制块（例如：`if`、`for`、`while`、`switch`等）之间嵌套过深，尽量不要超过4层。
 
-对函数的错误返回码要全面处理。
+对函数的错误返回码要进行处理：
+```c
+    err = acoral_thread_init(...)
+    if(err!=KR_OK)
+    {
+        acoral_printerr("No thread stack:%s\n",thread->name);
+        ...
+        return err;
+    }
+```
 ### <span id="5.2">5.2 函数参数</span>
 * 优先使用返回值而不是输出参数
 * 设计函数的参数时，统一按输入、输出、出入的顺序定义参数。
 * 设计函数的资源时，涉及内存、锁、队列等资源分配的，需要同时提供释放函数。
-* 对于模块外部传入的参数，必须进行合法性检查，保护程序免遭非法输入数据的破坏;模块内部函数调用，由调用者负责保证参数检测
+* 对于模块外部传入的参数，必须进行合法性检查，保护程序免遭非法输入数据的破坏；模块内部函数调用，由调用者负责保证参数检测
+```c
+    /* 参数检测 */
+    if(mq->msg_queue_ipc->type != ACORAL_IPC_MQ)
+    {
+        return KR_IPC_ERR_TYPE;
+    }
+```
 * 函数的指针参数如果不是用于修改所指向的对象就应该声明为指向const的指针。
+```c
+/* 不变参数声明为const */
+int strncmp(const char *s1, const char *s2, size_t n);
+```
 ### <span id="5.3">5.3 内联函数</span>
 
 内联函数规模建议控制在 10 行以内（非空非注释）。
