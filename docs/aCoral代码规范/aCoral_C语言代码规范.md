@@ -7,6 +7,7 @@
 | v0.2 | 饶洪江、文佳源 | 2025-03-19 | v0.1修改、增写排版格式 |
 | v0.3 | 饶洪江、文佳源 | 2025-03-20 | v0.2修改、增写注释、函数、头文件 |
 | v1.0 | 饶洪江、文佳源 | 2025-03-21 | v0.3修改、完成本规范的基础版本 |
+| v1.1 | 饶洪江、孟佳珉 | 2025-03-21 | v1.0基础版本的审查与修改 |
 
 ## <span id="goal">目的</span>
 
@@ -150,8 +151,8 @@ void buddy_scan(void);
 
 ```c
     matrix_transform(x1, x2, x3,
-                    y1, y2, y3,
-                    z1, z2, z3
+                     y1, y2, y3,
+                     z1, z2, z3
                     );
 ```
 
@@ -256,9 +257,9 @@ int point_count = 0;
         int year;
         int month;
         int day;
-    } Date;
+    } date_t;
 
-    Date date = {    
+    date_t date = {    
         .year   = 2000,
         .month  = 1,
         .day    = 1 
@@ -431,8 +432,8 @@ void buddy_scan(void)
 
 对函数的错误返回码要进行处理：
 ```c
-    err = acoral_thread_init(...)
-    if(err!=KR_OK)
+    err = acoral_thread_init(...);
+    if (err != KR_OK)
     {
         acoral_printerr("No thread stack:%s\n",thread->name);
         ...
@@ -495,9 +496,9 @@ int strncmp(const char *s1, const char *s2, size_t n);
 ### <span id="6.2">6.2 多行函数式宏</span>
 函数式宏不超过10行(非空非注释)，同时注意保持`\`的对齐
 
-包含多条语句的函数式宏的实现语句必须放在 `do-while(0)` :
+包含多条语句的函数式宏的实现语句必须放在 `do-while(0)`:
 ```c
-#define FUNC(x)                            \
+#define FUNC(x)                           \
     do {                                  \
         (void)printf("arg is %d\n", (x)); \
         do_something((x));                \
@@ -570,7 +571,7 @@ void func(...)
 不允许使用看不懂、难以理解的数字，如：`type = 2`、`status = 3`等。
 
 正确处理：
-可以增加注释说明，必须定义宏或const 变量，并通过符号命名自注释。
+对于单点使用的数字，可以增加注释说明；对于多处使用的数字，必须定义宏或const 变量，并通过符号命名自注释。
 例：
 ```c
 /* ipc类型：互斥量 */
