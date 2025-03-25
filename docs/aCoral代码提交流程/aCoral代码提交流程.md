@@ -56,15 +56,16 @@ test     新增或更新测试
 push前注意更新一下 fork-aCoral, 此时主 aCoral 仓库如果有更新, 可能和本地代码有冲突
 ![](images/4-1-update_repo.png)
 
-```
-git push
-```
-
-然后再拉取代码:
+然后拉取一下代码:
 ```
 git pull --rebase
 ```
 == 必须加 --rebase 忘加了就想办法回退 ==
+
+最后再push
+```
+git push
+```
 
 ## 5.提交 Pull Request
 
