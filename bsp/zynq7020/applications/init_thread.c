@@ -81,6 +81,9 @@ void init(void *args)
     acoral_ash_shell_init();
 #endif
 
+    /* 初始化mmu，！必须在网络等外设初始化前调用 */
+    mmu_init();
+
     /* 初始化lwip demo应用 */
     // lwip_app_thread_init();
     // lwip_client_init();
@@ -90,8 +93,6 @@ void init(void *args)
 //    XScuGic_Enable( &int_ctrl[0], AXI_INTR_ID );
 //    XScuGic_SetPriorityTriggerType(&int_ctrl[0], AXI_INTR_ID,
 //                    0xA0, 0x1);
-
-    mmu_init();
 
 #ifdef CFG_TIMED_THREADS_ENABLE
     acoral_print("timed decode\r\n");
