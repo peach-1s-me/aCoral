@@ -374,7 +374,7 @@ int main()
     // res = f_close(&fp);
     // acoral_print("my data written\r\n");
     acoral_start();
-    /* Set the GPIO output to be low. */
+    
     while(1)
     {
 
