@@ -372,7 +372,7 @@ int main()
     // res = f_lseek(&fp, 4);
     // res = f_write(&fp,&my_write_data,sizeof(new_send_t),&btw);
     // res = f_close(&fp);
-    // acoral_print("my data written\r\n");
+    // acoral_print("my data written \r\n");
     acoral_start();
     
     while(1)
