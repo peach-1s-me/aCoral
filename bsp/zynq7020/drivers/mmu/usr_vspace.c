@@ -11,6 +11,7 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>文佳源 饶洪江<td>2024-08-05 <td>内容
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 #include "usr_vspace.h"
@@ -284,7 +285,7 @@ void test_usr_space(void)
     mmu_enable();
 
     /* 测试切换和读写 */
-    void (*f)(void) = VADDR;
+    void (*f)(void) = (void *)VADDR;
 
     mmu_disable();
     //mmu_tlb_invalidate();

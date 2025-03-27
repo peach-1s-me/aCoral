@@ -12,6 +12,7 @@
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-07-13 <td>增加注释
  *         <tr><td>v2.0 <td>胡博文 <td>2023-09-09 <td>临界区与调度锁配合，更改调度时机
+ *         <tr><td>v2.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  */
 #include <type.h>
 #include <hal.h>
@@ -263,7 +264,7 @@ acoral_u8 start_measure_context_switch = 0;
  */
 void acoral_sched(void)
 {
-    double switch_during = 0;
+    // double switch_during = 0;
     /*如果不需要调度，则返回*/
     if(!acoral_need_sched)
         return;

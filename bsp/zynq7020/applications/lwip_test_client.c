@@ -11,9 +11,11 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>文佳源 <td>2025-02-25 <td>内容
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 #include "lwip_tcp_client.h"
+#include <stdio.h>
 
 #define STREAM_HISTORY  8
 #define BUFFER_SIZE     UXR_CONFIG_CUSTOM_TRANSPORT_MTU* STREAM_HISTORY
@@ -34,7 +36,7 @@ void lwip_test_client_thread_entry(void *args)
     while(1)
     {
         sprintf(write_buffer, "The sending count is [%d]", count++);
-        lwip_client_write(write_buffer, strlen(write_buffer), &err);
+        lwip_client_write((acoral_u8 *)write_buffer, strlen(write_buffer), &err);
         if(0 != err)
         {
             acoral_print("[ERROR] write error:err %d\r\n", err);
@@ -42,7 +44,7 @@ void lwip_test_client_thread_entry(void *args)
 
         acoral_delay_ms(1000);
 
-        lwip_client_read(read_buffer, strlen(write_buffer), 1, &err);
+        lwip_client_read((acoral_u8 *)read_buffer, strlen(write_buffer), 1, &err);
         if(0 != err)
         {
             acoral_print("[ERROR] read error:err %d\r\n", err);
@@ -55,10 +57,8 @@ void lwip_test_client_thread_entry(void *args)
     }
 }
 
-acoral_32 lwip_app_thread_init(void)
+void lwip_app_thread_init(void)
 {
-    acoral_32 err = -1;
-
     acoral_print("[lwip_app_thread_init] create app thread\r\n");
     acoral_comm_policy_data_t p_data;
     p_data.cpu = 0;  /* 指定运行的cpu */

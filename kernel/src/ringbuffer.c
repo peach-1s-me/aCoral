@@ -11,6 +11,7 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>文佳源 <td>2023-06-17 <td>新建文件
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 #include "acoral.h"
@@ -151,11 +152,11 @@ void cat_ringbuffer_print_all(cat_ringbuffer_t *p_ringbuffer)
 {
     acoral_u32 idx = p_ringbuffer->tail_index;
 
-    printf("************\n****tail=%2d, head=%2d****\n", (p_ringbuffer->tail_index), (p_ringbuffer->head_index));
+    acoral_print("************\n****tail=%2d, head=%2d****\n", (p_ringbuffer->tail_index), (p_ringbuffer->head_index));
     while(idx != (p_ringbuffer->head_index))
     {
-        printf("index=%2d, data=0x%x\n", idx, p_ringbuffer->p_buffer[idx]);
+        acoral_print("index=%2d, data=0x%x\n", idx, p_ringbuffer->p_buffer[idx]);
         idx = (idx + 1) & (p_ringbuffer->ring_mask);
     }
-    printf("************\n");
+    acoral_print("************\n");
 }

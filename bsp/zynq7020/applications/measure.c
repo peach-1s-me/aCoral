@@ -13,7 +13,8 @@
  * <tr><td>v1.0 <td>文佳源 <td>2024-07-05 <td>上下文切换开销测试
  * <tr><td>v1.0 <td>饶洪江 <td>2024-07-07 <td>核间迁移开销测试
  * <tr><td>v1.0 <td>文佳源 <td>2024-07-07 <td>调度开销测试-x
- * <tr><td>v2.0 <td>文佳源 <td>2024-07-10 <td>使用定时器重做
+ * <tr><td>v1.1 <td>文佳源 <td>2024-07-10 <td>使用定时器重做
+ * <tr><td>v1.2 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 #include <acoral.h>
@@ -34,17 +35,17 @@ void measure_done(const char *measure_name, during_buffer_t *buf)
     {
         case TIME_UNIT_US:
         {
-            printf("time unit is us\r\n");
+            acoral_print("time unit is us\r\n");
             break;
         }
         case TIME_UNIT_MS:
         {
-            printf("time unit is ms\r\n");
+            acoral_print("time unit is ms\r\n");
             break;
         }
         default:
         {
-            printf("ERROR: unknown time unit\r\n");
+            acoral_print("ERROR: unknown time unit\r\n");
             break;
         }
     }
@@ -60,7 +61,7 @@ void measure_done(const char *measure_name, during_buffer_t *buf)
 }
 
 /* 保存测量的数据 */
-acoral_err push_during(during_buffer_t *buf, double during)
+void push_during(during_buffer_t *buf, double during)
 {
     // switch_during_array[switch_during_idx++] = during;
     switch (buf->time_unit)
@@ -76,7 +77,7 @@ acoral_err push_during(during_buffer_t *buf, double during)
         }
         default:
         {
-            printf("ERROR: unknown time unit\r\n");
+            acoral_print("ERROR: unknown time unit\r\n");
             break;
         }
     }
@@ -88,7 +89,7 @@ acoral_err push_during(during_buffer_t *buf, double during)
     }
     else
     {
-        printf("ERROR: during(%f) bigger than SINGLE_MEASURE_MAX_TIME(%u)\r\n", during,SINGLE_MEASURE_MAX_TIME);
+        acoral_print("ERROR: during(%f) bigger than SINGLE_MEASURE_MAX_TIME(%u)\r\n", during,SINGLE_MEASURE_MAX_TIME);
     }
 }
 

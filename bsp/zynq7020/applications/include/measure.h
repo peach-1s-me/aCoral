@@ -11,6 +11,7 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>文佳源 <td>2024-07-05 <td>内容
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 #ifndef _MEASURE_H
@@ -28,6 +29,7 @@ typedef struct _during_buffer_t
     acoral_u32 time_unit;                       /* 时间单位 */
 } during_buffer_t;
 
-acoral_err push_during(during_buffer_t *buf, double during);
+void push_during(during_buffer_t *buf, double during);
+void measure(void);
 
 #endif

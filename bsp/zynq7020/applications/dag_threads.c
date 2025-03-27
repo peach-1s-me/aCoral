@@ -11,6 +11,7 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>胡博文 <td>2025-02-24 <td>内容
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 #include <acoral.h>
@@ -144,7 +145,7 @@ void dag_func_5(void *args)
                     acoral_cur_thread -> prio );
 #endif
 }
-acoral_func_point dag_func_5_prev[1] = {dag_func_2, dag_func_4};
+acoral_func_point dag_func_5_prev[2] = {dag_func_2, dag_func_4};
 acoral_dag_user_node dag_func_5_node =
 {
     .prev_route = dag_func_5_prev,

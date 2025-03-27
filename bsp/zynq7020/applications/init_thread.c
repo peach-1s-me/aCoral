@@ -11,6 +11,7 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>胡博文 <td>- <td>内容
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 
@@ -28,6 +29,8 @@
 // #include <lwip_threads.h>
 #include "lwip_tcp_client.h"
 #include <math.h>
+#include "measure.h"
+#include "mmu.h"
 //#define AXI_INTR_ID XPAR_FABRIC_LED_INTR_IP_0_IRQ_INTR
 
 //acoral_u32 delay_cnt = 0;

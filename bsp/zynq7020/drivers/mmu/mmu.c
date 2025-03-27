@@ -11,6 +11,7 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>文佳源 饶洪江 <td>2024-08-01 <td>内容
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 
@@ -244,9 +245,7 @@ void mmu_set_L1table(u32 vaddr_start,
     volatile u32 *pTT;
     volatile int i, nSec;
 
-    if(
-        (vaddr_end-vaddr_start+1)&0xfffff != 0
-    )
+    if(((vaddr_end - vaddr_start + 1) & 0xfffff) != 0)
     {
         /* the space is not aligned with 1MB */
         while(1);

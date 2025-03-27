@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "tcp.h": "c",
+        "lwip_tcp_client.h": "c"
+    }
+}

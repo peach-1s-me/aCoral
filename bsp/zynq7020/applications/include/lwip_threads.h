@@ -18,6 +18,6 @@
 #include <acoral.h>
 
 // acoral_32 lwip_deamon_init(void);
-acoral_32 lwip_app_thread_init(void);
+void lwip_app_thread_init(void);
 
 #endif
