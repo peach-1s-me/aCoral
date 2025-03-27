@@ -11,6 +11,7 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>文佳源 <td>2025-02-25 <td>内容
+ * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
 #include "acoral.h"
@@ -22,7 +23,8 @@
 #include "platform.h"
 #include "platform_config.h"
 
-/* tcp */
+/* lwip */
+#include "lwip/init.h"
 #include "lwip/tcp.h"
 
 /* 要连接的远程服务端IP */
@@ -64,8 +66,8 @@ acoral_u8 is_connected_to_server = 0; /* 已连接上服务器 */
 extern volatile int TcpFastTmrFlag;
 extern volatile int TcpSlowTmrFlag;
 
-static acoral_32 _lwip_client_init(void);
-static void _lwip_client_loop_thread(void);
+static void _lwip_client_init(void *args);
+static void _lwip_client_loop_thread(void *args);
 static acoral_32 lwip_deamon_init(void);
 static void lwip_deamon_entry(void *args);
 static void print_ip(char *msg, ip_addr_t *ip);
@@ -80,10 +82,8 @@ static struct netif client_netif;
 static cat_ringbuffer_t lwip_tcp_client_rb;
 static acoral_u8 lwip_tcp_client_rb_space[RCV_RB_SIZE];
 
-acoral_32 lwip_client_init(void)
+void lwip_client_init(void)
 {
-    acoral_32 err = -1;
-
     acoral_print("[lwip_app_thread_init] create lwip thread\r\n");
     acoral_comm_policy_data_t p_data;
     p_data.cpu = 0;  /* 指定运行的cpu */
@@ -105,7 +105,7 @@ acoral_32 lwip_client_init(void)
     }
 }
 
-static acoral_32 _lwip_client_init(void)
+static void _lwip_client_init(void *args)
 {
     ip_addr_t ipaddr, netmask, gw;
 
@@ -132,7 +132,7 @@ static acoral_32 _lwip_client_init(void)
                    PLATFORM_EMAC_BASEADDR))
     {
         xil_printf("Error adding N/W interface\n\r");
-        return -1;
+        return;
     }
 
     /* 设为默认网络接口 */
@@ -151,8 +151,6 @@ static acoral_32 _lwip_client_init(void)
     cat_ringbuffer_init(&lwip_tcp_client_rb, lwip_tcp_client_rb_space, RCV_RB_SIZE);
 
     start_client_background();
-
-    acoral_32 err = -1;
 
 #if 1
     acoral_print("[_lwip_app_client_init] create lwip loop\r\n");
@@ -202,7 +200,7 @@ static acoral_32 _lwip_client_init(void)
 #endif
 }
 
-static void _lwip_client_loop_thread(void)
+static void _lwip_client_loop_thread(void *args)
 {
     while (1)
     {
@@ -330,6 +328,8 @@ static acoral_32 lwip_deamon_init(void)
 
     return ret;
 }
+
+void timer_callback(void);
 
 /**
  * @brief lwip守护线程入口
@@ -482,7 +482,7 @@ err_t client_recv_callback(void *arg, struct tcp_pcb *tpcb,
     /* indicate that the packet has been received */
     tcp_recved(tpcb, p->len);
 
-    char buf[512];
+    acoral_u8 buf[512];
     MEMCPY(buf, p->payload, p->len);
 
     acoral_u32 result = cat_ringbuffer_put_more(&lwip_tcp_client_rb, buf, p->len);

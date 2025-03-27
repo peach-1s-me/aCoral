@@ -43,7 +43,7 @@
 #include "xil_exception.h"
 
 #include "xil_mmu.h"
-// #include "mmu.h"
+#include "mmu.h"
 
 #if defined (ARMR5)
 #include "xreg_cortexr5.h"
