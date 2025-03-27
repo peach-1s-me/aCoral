@@ -289,7 +289,7 @@ static acoral_32 recus_malloc(acoral_32 level_0)
         acoral_mem_ctrl->free_cur[level_0]=cur;
         return num;
     }
-    index=acoral_ffs(acoral_mem_ctrl->bitmap[level_0][cur]);//获取空闲块在其32位图中的位置
+    index=acoral_find_first_set(acoral_mem_ctrl->bitmap[level_0][cur]);//获取空闲块在其32位图中的位置
     index=cur*32+index;//计算空闲块实际位置
     acoral_clear_bit(index,acoral_mem_ctrl->bitmap[level_0]);//从只有一块空闲变成两块都不空闲了，所以清0
     if(acoral_mem_ctrl->bitmap[level_0][cur]==0)//如果此位图无空闲块了
