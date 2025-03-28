@@ -2,8 +2,8 @@
  * @file sched.c
  * @author 胡博文 (@921576434@qq.com)
  * @brief kernel层调度相关源文件
- * @version 1.0
- * @date 2022-07-13
+ * @version 2.1
+ * @date 2025-03-27
  * 
  * @copyright Copyright (c) 2022
  * 

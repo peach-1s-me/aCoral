@@ -2,8 +2,8 @@
  * @file bitops.h
  * @author 胡博文 (@921576434@qq.com)
  * @brief kernel层位图相关头文件
- * @version 1.0
- * @date 2022-07-02
+ * @version 2.0
+ * @date 2025-03-27
  * 
  * @copyright Copyright (c) 2022 EIC-UESTC
  * 
@@ -11,7 +11,7 @@
  *     <table>
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-07-02 <td>增加注释
- *         <tr><td>v2.0 <td>饶洪江 <td>2025-03-27 <td>规范代码风格
+ *         <tr><td>v2.0 <td>饶洪江 <td>2025-03-27 <td>规范代码风格，小幅重构
  */
 #ifndef KERNEL_BITOPS_H
 #define KERNEL_BITOPS_H

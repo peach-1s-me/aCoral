@@ -2,8 +2,8 @@
  * @file lwip_test_client.c
  * @author 文佳源 (648137125@qq.com)
  * @brief tcp客户端的demo,使用lwip_tcp_client的接口
- * @version 0.1
- * @date 2025-02-25
+ * @version 1.1
+ * @date 2025-03-27
  * 
  * Copyright (c) 2025
  * 

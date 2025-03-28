@@ -2,8 +2,8 @@
  * @file measure.c
  * @author 文佳源 (648137125@qq.com)
  * @brief 测试系统开销
- * @version 0.1
- * @date 2024-07-05
+ * @version 1.2
+ * @date 2025-03-27
  * 
  * Copyright (c) 2024
  * 
