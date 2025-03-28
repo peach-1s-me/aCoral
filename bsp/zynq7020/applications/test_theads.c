@@ -350,7 +350,7 @@ void test_start()
 {
 //    test_suspend_start();
 //    test_rdy_start();
-    test_move_start();
+    // test_move_start();
 //    test_delay_thread_start();
 //    test_mutex_start();
 //    test_sem_start();
