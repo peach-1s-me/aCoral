@@ -22,10 +22,8 @@
 #include "print.h"
 #include "xscugic.h"
 
-/// 中断系统控制结构体实例
-XScuGic int_ctrl[CFG_MAX_CPU];
-/// 中断系统gic配置结构体实例
-XScuGic_Config int_gic_config[CFG_MAX_CPU];
+XScuGic        int_ctrl[CFG_MAX_CPU];       /* 中断系统控制结构体实例 */
+XScuGic_Config int_gic_config[CFG_MAX_CPU]; /* 中断系统gic配置结构体实例 */
 
 /**
  * @brief 中断系统服务函数入口
@@ -53,6 +51,7 @@ void acoral_intr_handler(acoral_u32 ulICCIAR)
         vector_entry->Handler(vector_entry->CallBackRef);
     }
 }
+
 /**
  * @brief 中断配置初始化函数
  *
@@ -85,10 +84,9 @@ void acoral_intr_callback_register(acoral_u32 cpu, acoral_u32 intr_id, acoral_in
     if (NULL == callback)
     {
         acoral_print("ERROR: null callback ptr\r\n");
-        while (1)
-            ;
+        while (1);
     }
-    int_gic_config[cpu].HandlerTable[intr_id].Handler = callback;
+    int_gic_config[cpu].HandlerTable[intr_id].Handler     = callback;
     int_gic_config[cpu].HandlerTable[intr_id].CallBackRef = callback_arg;
 }
 
@@ -137,21 +135,15 @@ void acoral_intr_sys_init(void)
  */
 void acoral_intr_entry(acoral_u32 ulICCIAR)
 {
-    /* 增加中断嵌套计数 */
-    acoral_intr_nesting_inc();
-    /* 开启中断，允许重入 */
-    acoral_intr_enable();
+    acoral_intr_nesting_inc();     /* 增加中断嵌套计数 */
+    acoral_intr_enable();          /* 开启中断，允许重入 */
 
-    /* 执行中断服务函数 */
-    acoral_intr_handler(ulICCIAR);
+    acoral_intr_handler(ulICCIAR); /* 执行中断服务函数 */
 
-    /* 关闭中断 */
-    acoral_intr_disable();
-    /* 减少中断嵌套计数 */
-    acoral_intr_nesting_dec();
+    acoral_intr_disable();         /* 关闭中断 */
+    acoral_intr_nesting_dec();     /* 减少中断嵌套计数 */
 
-    /* 查看是否需要调度 */
-    acoral_intr_exit();
+    acoral_intr_exit();            /* 查看是否需要调度 */
 }
 
 /**
