@@ -69,7 +69,7 @@ void acoral_ticks_handler(void *CallBackRef)
 {
 #ifdef CFG_OS_TICK_PRINT_ENABLE
     static acoral_time time_tmp = 0;
-    static acoral_u8 i = 0;
+    static acoral_u32  seconds = 0;
 #endif
     XScuTimer *TimerInstancePtr = (XScuTimer *) CallBackRef;
     if (XScuTimer_IsExpired(TimerInstancePtr))
@@ -81,9 +81,9 @@ void acoral_ticks_handler(void *CallBackRef)
 #ifdef CFG_OS_TICK_PRINT_ENABLE
         if((ticks - time_tmp)>=1000)
         {
-            i++;
+            seconds++;
             time_tmp = ticks;
-            acoral_print("\r\n----------OS Time: %ds----------\r\n", i);
+            acoral_print("\r\n----------OS Time: %ds----------\r\n", seconds);
         }
 #endif
         if(acoral_sched_enable==true)
