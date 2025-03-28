@@ -152,13 +152,9 @@ void acoral_intr_entry(acoral_u32 ulICCIAR)
  */
 void acoral_intr_exit()
 {
-    if (!acoral_need_sched)
-        return;
-    if (acoral_intr_nesting)
-        return;
-    if (acoral_sched_is_lock)
-        return;
-    if (!acoral_sched_enable)
-        return;
-    hal_irq_switch[acoral_current_cpu] = 1;
+    if (acoral_sched_enable  && acoral_need_sched && !acoral_intr_nesting  &&
+       !acoral_sched_is_lock)
+    {
+        hal_irq_switch[acoral_current_cpu] = 1;
+    }
 }
