@@ -2,8 +2,8 @@
  * @file ringbuffer.c
  * @author 文佳源 (648137125@qq.com)
  * @brief 环形缓冲区源文件
- * @version 0.1
- * @date 2023-06-17
+ * @version 1.1
+ * @date 2025-03-27
  * 
  * Copyright (c) 2023
  * 

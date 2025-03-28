@@ -152,7 +152,7 @@
 
 
 //用户配置: 任务准入控制测试案例 Test Threads Ctrl
-//#define CFG_TEST_THREADS_ENABLE
+#define CFG_TEST_THREADS_ENABLE
 //#define CFG_TEST_THREADS_ADMIS_CTRL_PRINT_ENABLE
 
 

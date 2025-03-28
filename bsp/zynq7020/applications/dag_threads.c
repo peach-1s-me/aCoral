@@ -2,8 +2,8 @@
  * @file dag_threads.c
  * @author 胡博文
  * @brief 并行编程框架线程示例
- * @version 0.1
- * @date 2025-02-24
+ * @version 1.1
+ * @date 2025-03-27
  * 
  * Copyright (c) 2025
  * 
