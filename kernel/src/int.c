@@ -2,8 +2,8 @@
  * @file int.c
  * @author 胡博文 (@921576434@qq.com)
  * @brief kernel层中断系统源文件
- * @version 1.0
- * @date 2022-07-08
+ * @version 1.2
+ * @date 2025-03-28
  *
  * @copyright Copyright (c) 2022 EIC-UESTC
  *
