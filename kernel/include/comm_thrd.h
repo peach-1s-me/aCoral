@@ -22,7 +22,8 @@
  * @brief 普通线程策略数据结构体
  * 
  */
-typedef struct{
+typedef struct
+{
 	acoral_u32 cpu;  /* 所在cpu */
 	acoral_u8  prio; /* 优先级 */
 } acoral_comm_policy_data_t;
