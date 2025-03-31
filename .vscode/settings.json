@@ -2,6 +2,8 @@
     "files.associations": {
         "tcp.h": "c",
         "lwip_tcp_client.h": "c",
-        "queue.h": "c"
+        "queue.h": "c",
+        "type.h": "c",
+        "thread.h": "c"
     }
 }
