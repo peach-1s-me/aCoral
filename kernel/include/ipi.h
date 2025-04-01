@@ -52,12 +52,13 @@ extern acoral_u8 acoral_ipi_status[CFG_MAX_CPU];
  * @brief 核间命令结构体
  * 
  */
-typedef struct{
+typedef struct
+{
     acoral_spinlock_t lock;      /* 自旋锁 */
     acoral_u32        cmd;       /* 命令 */
     acoral_id         thread_id; /* 线程id */
     void             *data;      /* 数据 */
-}acoral_ipi_cmd_t;  
+} acoral_ipi_cmd_t;  
 
 void acoral_ipi_send(acoral_u32 cpu);
 void acoral_core_ipi_init(void);
