@@ -2,7 +2,7 @@
  * @file int.h
  * @author 胡博文 (@921576434@qq.com)
  * @brief kernel层中断系统头文件
- * @version 1.0
+ * @version 2.0
  * @date 2022-07-08
  * 
  * @copyright Copyright (c) 2022
@@ -11,9 +11,11 @@
  *     <table>
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-07-08 <td>增加注释
+ *         <tr><td>v2.0 <td>文佳源 <td>2025-03-28 <td>规范代码风格
  */
 #ifndef KERNEL_INT_H
 #define KERNEL_INT_H
+
 #include <config.h>
 #include <type.h>
 #include "xscugic.h"
@@ -36,8 +38,12 @@ extern XScuGic int_ctrl[CFG_MAX_CPU];
 
 void acoral_intr_sys_init(void);
 void acoral_intr_init(acoral_u32 cpu);
-
-void acoral_intr_callback_register(acoral_u32 cpu, acoral_u32 intr_id, acoral_intr_callback_t callback, void *callback_arg);
+void acoral_intr_callback_register(
+    acoral_u32              cpu, 
+    acoral_u32              intr_id, 
+    acoral_intr_callback_t  callback, 
+    void                   *callback_arg
+);
 void acoral_intr_enable_by_id(acoral_u32 cpu, acoral_u32 intr_id);
 void acoral_intr_disable_by_id(acoral_u32 cpu, acoral_u32 intr_id);
 

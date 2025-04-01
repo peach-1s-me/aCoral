@@ -2,7 +2,7 @@
  * @file int.c
  * @author 胡博文 (@921576434@qq.com)
  * @brief kernel层中断系统源文件
- * @version 1.2
+ * @version 2.0
  * @date 2025-03-28
  *
  * @copyright Copyright (c) 2022 EIC-UESTC
@@ -12,7 +12,7 @@
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-07-08 <td>增加注释
  *         <tr><td>v1.1 <td>文佳源 <td>2024-09-25 <td>增加注册中断服务函数和开关中断的接口
- *         <tr><td>v1.2 <td>文佳源 <td>2025-03-28 <td>规范代码风格
+ *         <tr><td>v2.0 <td>文佳源 <td>2025-03-28 <td>规范代码风格
  */
 #include "type.h"
 #include "hal.h"
@@ -79,7 +79,12 @@ void acoral_intr_init(acoral_u32 cpu)
  * @param  callback         中断回调函数
  * @param  callback_arg     回调函数的参数
  */
-void acoral_intr_callback_register(acoral_u32 cpu, acoral_u32 intr_id, acoral_intr_callback_t callback, void *callback_arg)
+void acoral_intr_callback_register(
+    acoral_u32              cpu, 
+    acoral_u32              intr_id, 
+    acoral_intr_callback_t  callback, 
+    void                   *callback_arg
+)
 {
     if (NULL == callback)
     {
