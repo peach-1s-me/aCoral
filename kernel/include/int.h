@@ -5,7 +5,7 @@
  * @version 2.0
  * @date 2022-07-08
  * 
- * @copyright Copyright (c) 2022
+ * @copyright Copyright (c) 2022 EIC-UESTC
  * 
  * @par 修订历史
  *     <table>
@@ -23,17 +23,18 @@
 typedef void (*acoral_intr_callback_t)(void *data);
 
 extern XScuGic int_ctrl[CFG_MAX_CPU];
-///重定义开中断
+
+/* 重定义开中断 */
 #define acoral_intr_enable() HAL_INTR_ENABLE()
-///重定义开关中断
+/* 重定义开关中断 */
 #define acoral_intr_disable() HAL_INTR_DISABLE()
-///重定义中断嵌套获取
+/* 重定义中断嵌套获取 */
 #define acoral_intr_nesting HAL_GET_INTR_NESTING()
-///重定义增加中断嵌套
+/* 重定义增加中断嵌套 */
 #define acoral_intr_nesting_inc() HAL_INTR_NESTING_INC()
-///重定义减少中断嵌套
+/* 重定义减少中断嵌套 */
 #define acoral_intr_nesting_dec() HAL_INTR_NESTING_DEC()
-///重定义中断入口
+/* 重定义中断入口 */
 #define acoral_intr_entry(ulICCIAR)	hal_all_entry(ulICCIAR)
 
 void acoral_intr_sys_init(void);
