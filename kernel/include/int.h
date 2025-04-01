@@ -3,7 +3,7 @@
  * @author 胡博文 (@921576434@qq.com)
  * @brief kernel层中断系统头文件
  * @version 2.0
- * @date 2022-07-08
+ * @date 2025-03-28
  * 
  * @copyright Copyright (c) 2022 EIC-UESTC
  * 
@@ -16,8 +16,8 @@
 #ifndef KERNEL_INT_H
 #define KERNEL_INT_H
 
-#include <config.h>
-#include <type.h>
+#include "config.h"
+#include "type.h"
 #include "xscugic.h"
 
 typedef void (*acoral_intr_callback_t)(void *data);
