@@ -4,6 +4,7 @@
         "lwip_tcp_client.h": "c",
         "queue.h": "c",
         "type.h": "c",
-        "thread.h": "c"
+        "thread.h": "c",
+        "lib.h": "c"
     }
 }

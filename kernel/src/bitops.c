@@ -57,7 +57,7 @@ acoral_u32 acoral_find_first_set(acoral_u32 bitmap)
  * @brief 从低位寻找第一个为1的位（多位图）
  * 
  * @param bitmaps 需要寻找的32位图指针
- * @param length 32位图长度
+ * @param length  32位图长度
  * @return acoral_u32 从低位开始第一个为1的位数
  */
 acoral_u32 acoral_find_first_bit(const acoral_u32 *bitmaps, acoral_u32 length)
@@ -79,39 +79,39 @@ acoral_u32 acoral_find_first_bit(const acoral_u32 *bitmaps, acoral_u32 length)
  * @brief 把位图某位置1
  * 
  * @param position 需要置1的位数
- * @param bitmap 32位图指针
+ * @param bitmap   32位图指针
  */
 void acoral_set_bit(acoral_32 position,acoral_u32 *bitmap)
 {
     acoral_u32 old_val, mask = 1UL << (position & 31);
     acoral_u32 *temp;
 
-    temp = bitmap + (position >> 5);
+    temp    = bitmap + (position >> 5);
     old_val = *temp;
-    *temp = old_val | mask;
+    *temp   = old_val | mask;
 }
 
 /**
  * @brief 把位图某位清0
  * 
  * @param position 需要清0的位数
- * @param bitmap 32位图指针
+ * @param bitmap   32位图指针
  */
 void acoral_clear_bit(acoral_32 position, acoral_u32 *bitmap)
 {
     acoral_u32 old_val, mask = 1UL << (position & 31);
     acoral_u32 *temp;
 
-    temp = bitmap + (position >> 5);
+    temp    = bitmap + (position >> 5);
     old_val = *temp;
-    *temp = old_val & (~mask);
+    *temp   = old_val & (~mask);
 }
 
 /**
  * @brief 获取位图中某一位的值
  * 
  * @param position 想要获取值的位数
- * @param bitmap 32位图指针
+ * @param bitmap   32位图指针
  * @return acoral_u32 某位的值
  */
 acoral_u32 acoral_get_bit(acoral_32 position, acoral_u32 *bitmap)
@@ -119,7 +119,7 @@ acoral_u32 acoral_get_bit(acoral_32 position, acoral_u32 *bitmap)
     acoral_u32 old_val, mask = 1UL << (position & 31);
     acoral_u32 *temp;
 
-    temp = bitmap + (position >> 5);
+    temp    = bitmap + (position >> 5);
     old_val = *temp;
     return old_val & mask;
 }

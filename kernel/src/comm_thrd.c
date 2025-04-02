@@ -31,20 +31,26 @@ acoral_sched_policy_t acoral_comm_policy;
  * @brief 普通线程初始化
  * 
  * @param thread 线程结构体指针
- * @param route 线程运行函数
- * @param args 传递参数
- * @param data 数据
+ * @param route  线程运行函数
+ * @param args   传递参数
+ * @param data   数据
  * @return acoral_id 线程id
  */
-static acoral_id comm_policy_thread_init(acoral_thread_t *thread,void (*route)(void *args),void *args,void *p_data,void *data)
+static acoral_id comm_policy_thread_init(
+    acoral_thread_t *thread,
+    void            (*route)(void *args),
+    void            *args,
+    void            *p_data,
+    void            *data
+)
 {
     acoral_err err;
-    acoral_u8 prio;
+    acoral_u8  prio;
     acoral_comm_policy_data_t *policy_data;
 
-    policy_data = (acoral_comm_policy_data_t *)p_data;
-    thread->cpu = policy_data->cpu;
-    prio = policy_data->prio;
+    policy_data  = (acoral_comm_policy_data_t *)p_data;
+    thread->cpu  = policy_data->cpu;
+    prio         = policy_data->prio;
     thread->prio = prio; /* 设定优先级 */
 
     /* 通用线程初始化 */
