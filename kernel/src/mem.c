@@ -130,7 +130,7 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
     start_adr &= ~(4 - 1); /* 首地址四字节对齐 */
     end_adr &= ~(4 - 1);   /* 尾地址四字节对齐 */
 
-    end_adr = end_adr - sizeof(acoral_block_ctr_t);  /* 减去内存控制块的大小，剩下的才是可分配内存 */
+    end_adr  = end_adr - sizeof(acoral_block_ctr_t);  /* 减去内存控制块的大小，剩下的才是可分配内存 */
     end_adr &= ~(4 - 1);                             /* 尾地址再进行一次四字节对齐 */
 
     acoral_mem_ctrl = (acoral_block_ctr_t *)end_adr; /* 内存控制块的地址 */
@@ -144,8 +144,8 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
     }
     acoral_mem_ctrl->state = MEM_OK;
 
-    acoral_u32 resize_size = BLOCK_SIZE;
-    acoral_u32 num = 1;
+    acoral_u32 resize_size    = BLOCK_SIZE;
+    acoral_u32 num            = 1;
     acoral_u32 adjust_level_1 = 1;
     while (1) /* 计算分配层数 */
     {
@@ -155,7 +155,7 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
         }
 
         resize_size = resize_size << 1;
-        num = num << 1; /* 全分成基本内存块的数量 */
+        num         = num << 1; /* 全分成基本内存块的数量 */
         adjust_level_1++;
     }
 
@@ -179,13 +179,13 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
         save_adr -= num * 4;                                   /* 每一个32位位图为4个字节 */
         save_adr &= ~(4 - 1);                                  /* 四字节对齐 */
         acoral_mem_ctrl->bitmap[i] = (acoral_u32 *)save_adr;   /* 当层bitmap地址 */
-        acoral_mem_ctrl->num_l[i] = num;
+        acoral_mem_ctrl->num_l[i]  = num;
         save_adr -= num * 4;                                   /* 每一个32位位图为4个字节 */
         save_adr &= ~(4 - 1);                                  /* 四字节对齐 */
         acoral_mem_ctrl->free_list[i] = (acoral_32 *)save_adr; /* 当层free_list地址 */
         for (acoral_32 k = 0; k < num; k++)
         {
-            acoral_mem_ctrl->bitmap[i][k] = 0;     /* 初始化当层bitmap */
+            acoral_mem_ctrl->bitmap[i][k]    = 0;     /* 初始化当层bitmap */
             acoral_mem_ctrl->free_list[i][k] = -1; /* 初始化当层free_list */
         }
         acoral_mem_ctrl->free_cur[i] = -1; /* 初始化当层free_cur */
@@ -201,13 +201,13 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
     save_adr -= num * 4;
     save_adr &= ~(4 - 1);
     acoral_mem_ctrl->bitmap[i] = (acoral_u32 *)save_adr;
-    acoral_mem_ctrl->num_l[i] = num;
+    acoral_mem_ctrl->num_l[i]  = num;
     save_adr -= num * 4;
     save_adr &= ~(4 - 1);
     acoral_mem_ctrl->free_list[i] = (acoral_32 *)save_adr;
     for (acoral_32 k = 0; k < num; k++)
     {
-        acoral_mem_ctrl->bitmap[i][k] = 0;
+        acoral_mem_ctrl->bitmap[i][k]    = 0;
         acoral_mem_ctrl->free_list[i][k] = -1;
     }
     acoral_mem_ctrl->free_cur[i] = -1;
@@ -223,17 +223,17 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
     }
 
     /* 初始化内存控制块 */
-    acoral_mem_ctrl->level = level_1;
-    acoral_mem_ctrl->start_adr = start_adr;
-    num = (save_adr - start_adr) >> BLOCK_SHIFT;
-    acoral_mem_ctrl->end_adr = start_adr + (num << BLOCK_SHIFT);
-    acoral_mem_ctrl->block_num = num;
-    acoral_mem_ctrl->free_num = num;
+    acoral_mem_ctrl->level      = level_1;
+    acoral_mem_ctrl->start_adr  = start_adr;
+    num                         = (save_adr - start_adr) >> BLOCK_SHIFT;
+    acoral_mem_ctrl->end_adr    = start_adr + (num << BLOCK_SHIFT);
+    acoral_mem_ctrl->block_num  = num;
+    acoral_mem_ctrl->free_num   = num;
     acoral_mem_ctrl->block_size = BLOCK_SIZE;
 
     i = 0;
     acoral_u32 max_num = 1 << (level_1 - 1); /* 最大内存块层的每块内存大小 */
-    acoral_u32 o_num = 0;
+    acoral_u32 o_num   = 0;
 
     /* 有内存块，则最大内存块层的free_cur为0 */
     if (num > 0) 
@@ -249,7 +249,7 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
     /* 整块内存优先分给最大内存块层 */
     while (num >= max_num * 32) /* 计算当前可分配内存容量是否能直接形成一个最大内存块层的32位图 */
     {
-        acoral_mem_ctrl->bitmap[level_1 - 1][i] = -1;
+        acoral_mem_ctrl->bitmap[level_1 - 1][i]    = -1;
         acoral_mem_ctrl->free_list[level_1 - 1][i] = i + 1;
         num -= max_num * 32;
         o_num += max_num * 32;
@@ -267,7 +267,7 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
     {
         index = o_num >> (level_1 - 1);
         acoral_set_bit(index, acoral_mem_ctrl->bitmap[level_1 - 1]);
-        num -= max_num;
+        num   -= max_num;
         o_num += max_num;
     }
     acoral_mem_ctrl->free_list[level_1 - 1][i] = -1;
@@ -286,10 +286,10 @@ acoral_err buddy_init(acoral_u32 start_adr, acoral_u32 end_adr)
         {
             acoral_mem_blocks[BLOCK_INDEX(o_num)].level_0 = -1;
             acoral_set_bit(index, acoral_mem_ctrl->bitmap[level_1 - 1]);
-            acoral_mem_ctrl->free_list[level_1 - 1][cur] = -1;
-            acoral_mem_ctrl->free_cur[level_1 - 1] = cur;
+            acoral_mem_ctrl->free_list[level_1 - 1][cur]  = -1;
+            acoral_mem_ctrl->free_cur[level_1 - 1]        = cur;
             o_num += max_num;
-            num -= max_num;
+            num   -= max_num;
         }
     }
     acoral_spin_init(&acoral_mem_ctrl->lock); /* 自旋锁初始化 */
@@ -326,7 +326,7 @@ static acoral_32 recus_malloc(acoral_32 level_0)
 
         /* 当前层无空闲，两个空闲块是从上层分配的，所以空闲位图链表更改，然后分配完一块还有一块，所以移动空闲位图链表头 */
         acoral_mem_ctrl->free_list[level_0][cur] = -1;
-        acoral_mem_ctrl->free_cur[level_0] = cur;
+        acoral_mem_ctrl->free_cur[level_0]       = cur;
 
         return num;
     }
@@ -400,8 +400,8 @@ acoral_u32 buddy_malloc_size(acoral_u32 size)
     }
 
     acoral_u32 resize_size = BLOCK_SIZE;
-    acoral_u8  level_0 = 0;
-    acoral_u32 num = 1;
+    acoral_u8  level_0     = 0;
+    acoral_u32 num         = 1;
     while (resize_size < size && level_0 < acoral_mem_ctrl->level)
     {
         num = num << 1;
@@ -425,8 +425,8 @@ void *buddy_malloc(acoral_u32 size)
     }
 
     acoral_u32 resize_size = BLOCK_SIZE;
-    acoral_u8  level_0 = 0;
-    acoral_u32 num = 1;
+    acoral_u8  level_0     = 0;
+    acoral_u32 num         = 1;
     while (resize_size < size) /* 本层块大小不满足申请内存 */
     {
         num = num << 1;
@@ -487,7 +487,7 @@ void buddy_free(void *ptr)
     {
         level_0 = 0; /* 奇数基本内存块一定是从0层分配 */
         /* 下面是地址检查 */
-        index = BLOCK_INDEX(num);
+        index         = BLOCK_INDEX(num);
         buddy_level_0 = acoral_mem_blocks[index].level_0; /* 查看该块是从哪一层分配的 */
         /* 不是从0层，直接返回错误 */
         if (buddy_level_0 > 0)
@@ -570,19 +570,22 @@ void buddy_free(void *ptr)
             if (acoral_mem_ctrl->free_cur[level_0] < 0 || cur < acoral_mem_ctrl->free_cur[level_0])
             {
                 acoral_mem_ctrl->free_list[level_0][cur] = acoral_mem_ctrl->free_cur[level_0];
-                acoral_mem_ctrl->free_cur[level_0] = cur;
+                acoral_mem_ctrl->free_cur[level_0]       = cur;
             }
             else if (cur > acoral_mem_ctrl->free_cur[level_0])
             {
                 /* 释放的位比空闲位图链表头大 */
+
+                /* 遍历链表到添加的位置 */
                 temp_cur = acoral_mem_ctrl->free_cur[level_0];
-                while ((acoral_mem_ctrl->free_list[level_0][temp_cur] != -1) && (acoral_mem_ctrl->free_list[level_0][temp_cur] < cur)) /* 遍历链表到添加的位置 */
+                while ((acoral_mem_ctrl->free_list[level_0][temp_cur] != -1) &&
+                       (acoral_mem_ctrl->free_list[level_0][temp_cur] < cur))
                 {
                     temp_cur = acoral_mem_ctrl->free_list[level_0][temp_cur];
                 }
 
                 /* 添加位图，此时空闲位图链表头不用改变 */
-                acoral_mem_ctrl->free_list[level_0][cur] = acoral_mem_ctrl->free_list[level_0][temp_cur];
+                acoral_mem_ctrl->free_list[level_0][cur]      = acoral_mem_ctrl->free_list[level_0][temp_cur];
                 acoral_mem_ctrl->free_list[level_0][temp_cur] = cur;
             }
 
@@ -673,7 +676,7 @@ struct vol_mem_ctrl_t vol_mem_ctrl;
  */
 void vol_mem_init()
 {
-    acoral_size size = acoral_malloc_size(CFG_MEM_VOL_SIZE);           /* 计算任意大小内存可分配容量 */
+    acoral_size size    = acoral_malloc_size(CFG_MEM_VOL_SIZE);           /* 计算任意大小内存可分配容量 */
     vol_mem_ctrl.down_p = (acoral_8 *)acoral_malloc(size); /* 分配任意大小内存可分配容量 */
     if (vol_mem_ctrl.down_p == NULL)
     {
@@ -687,7 +690,7 @@ void vol_mem_init()
     }
 
     acoral_mutex_init(&vol_mem_ctrl.mutex);                   /* 互斥量初始化 */
-    vol_mem_ctrl.top_p = vol_mem_ctrl.down_p + size;          /* 可任意分配内存顶 */
+    vol_mem_ctrl.top_p   = vol_mem_ctrl.down_p + size;          /* 可任意分配内存顶 */
     vol_mem_ctrl.freep_p = (acoral_u32 *)vol_mem_ctrl.down_p; /* 可任意分配内存空闲块指针 */
     BLOCK_SET_FREE(vol_mem_ctrl.freep_p, size);               /* 设置一整块空闲 */
 }
@@ -719,13 +722,13 @@ static void *vol_r_malloc(acoral_32 size)
         {
             /* 找到下一个空闲块指针 */
             ctp = ctp + b_size;
-            tp = (acoral_u32 *)ctp;
+            tp  = (acoral_u32 *)ctp;
         }
         else /* 该块容量足够且空闲 */
         {
             BLOCK_SET_USED(tp, size); /* 标志使用 */
             ctp = ctp + size;
-            tp = (acoral_u32 *)ctp;                 /* 移动到所需的size末尾 */
+            tp  = (acoral_u32 *)ctp;                 /* 移动到所需的size末尾 */
             if (b_size - size > 0)                  /* 此前分配的容量大于即将分配的size */
             {
                 BLOCK_SET_FREE(tp, b_size - size);  /* 设置后面的内存空闲，造成碎片 */
@@ -737,7 +740,7 @@ static void *vol_r_malloc(acoral_32 size)
         }
     }
     ctp = vol_mem_ctrl.down_p;
-    tp = (acoral_u32 *)ctp;
+    tp  = (acoral_u32 *)ctp;
     while (tp < vol_mem_ctrl.freep_p)
     {
         b_size = BLOCK_GET_SIZE(*tp);
@@ -751,13 +754,13 @@ static void *vol_r_malloc(acoral_32 size)
         if (BLOCK_IS_USED(*tp) || b_size < size)
         {
             ctp = ctp + b_size;
-            tp = (acoral_u32 *)ctp;
+            tp  = (acoral_u32 *)ctp;
         }
         else
         {
             BLOCK_SET_USED(tp, size);
             ctp = ctp + size;
-            tp = (acoral_u32 *)ctp;
+            tp  = (acoral_u32 *)ctp;
             if (b_size - size > 0)
             {
                 BLOCK_SET_FREE(tp, b_size - size);
@@ -818,11 +821,11 @@ void vol_free(void *p)
         return;
     }
     acoral_u32 *prev_tp = tp;
-    acoral_8 *ctp = (acoral_8 *)tp;
-    acoral_u32 b_size = BLOCK_GET_SIZE(*tp); /* 该块size */
+    acoral_8 *ctp       = (acoral_8 *)tp;
+    acoral_u32 b_size   = BLOCK_GET_SIZE(*tp); /* 该块size */
 
     ctp = ctp + b_size;
-    tp = (acoral_u32 *)ctp;
+    tp  = (acoral_u32 *)ctp;
     acoral_u32 size; 
     if (BLOCK_IS_FREE(*tp)) /* 检测后面的块是否空闲 */
     {
@@ -848,7 +851,7 @@ void vol_free(void *p)
     }
 
     ctp = vol_mem_ctrl.down_p;
-    tp = (acoral_u32 *)ctp;
+    tp  = (acoral_u32 *)ctp;
     while (ctp < (acoral_8 *)p) /* 找到前一块指针 */
     {
         size = BLOCK_GET_SIZE(*tp); /* 获取块size */
@@ -860,9 +863,9 @@ void vol_free(void *p)
             return;
         }
 
-        ctp = ctp + size;
+        ctp     = ctp + size;
         prev_tp = tp;
-        tp = (acoral_u32 *)ctp;
+        tp      = (acoral_u32 *)ctp;
     }
 
     if (BLOCK_IS_FREE(*prev_tp)) /* 若前一块空闲，可合并 */
@@ -891,7 +894,7 @@ void vol_mem_scan(void)
     acoral_8 *ctp = vol_mem_ctrl.down_p;
     do
     {
-        acoral_u32 *tp = (acoral_u32 *)ctp;
+        acoral_u32 *tp  = (acoral_u32 *)ctp;
         acoral_u32 size = BLOCK_GET_SIZE(*tp);
         if (size == 0)
         {
