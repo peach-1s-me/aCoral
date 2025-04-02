@@ -101,10 +101,10 @@ void acoral_ipi_cmd_init()
 /**
  * @brief 核间命令发送
  * 
- * @param cpu 目标cpu
- * @param cmd 命令
+ * @param cpu       目标cpu
+ * @param cmd       命令
  * @param thread_id 相关线程id
- * @param data 数据
+ * @param data      数据
  */
 void acoral_ipi_cmd_send(
     acoral_u32 cpu,
@@ -138,7 +138,7 @@ void acoral_ipi_cmd_handler(void *CallBackRef)
 {
     acoral_ipi_cmd_t *cmd_data;
     acoral_u32 cmd;
-    acoral_id thread_id;
+    acoral_id  thread_id;
     void *data;
 
     cmd_data  = acoral_ipi_cmd + acoral_current_cpu;

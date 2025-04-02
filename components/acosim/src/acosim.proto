@@ -6,7 +6,7 @@ syntax = "proto3";
 message AcoSimCore {
   uint32 id = 1;
   string name = 2;
-  uint64 cpuFrequency = 3;
+  uint64 cpu_frequency = 3;
   map<string, string> metadata = 4;
 }
 
@@ -36,7 +36,7 @@ message AcoSimSwitchContext {
 message AcoSimCore {
   uint32 id = 1;
   string name = 2;
-  uint64 cpuFrequency = 3;
+  uint64 cpu_frequency = 3;
   map<string, string> metadata = 4;
 }
 
