@@ -26,8 +26,8 @@
 #include "print.h"
 #include "error.h"
 
-acoral_sched_policy_t period_policy; /* 周期线程策略结构体实例 */
-acoral_queue_t period_time_queue;    /* 周期线程队列 */
+static acoral_sched_policy_t period_policy; /* 周期线程策略结构体实例 */
+static acoral_queue_t period_time_queue;    /* 周期线程队列 */
 
 /**
  * @brief 周期线程私有数据结构体
