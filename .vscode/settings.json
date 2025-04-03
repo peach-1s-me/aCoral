@@ -5,6 +5,8 @@
         "queue.h": "c",
         "type.h": "c",
         "thread.h": "c",
-        "lib.h": "c"
+        "lib.h": "c",
+        "policy.h": "c",
+        "hal.h": "c"
     }
 }
