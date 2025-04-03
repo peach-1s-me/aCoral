@@ -26,4 +26,6 @@ typedef struct
     acoral_time time; /* 周期时间 */
 } acoral_period_policy_data_t;
 
+void period_policy_init(void);
+
 #endif

@@ -28,4 +28,6 @@ typedef struct
 	acoral_u8  prio; /* 优先级 */
 } acoral_comm_policy_data_t;
 
+void comm_policy_init(void);
+
 #endif

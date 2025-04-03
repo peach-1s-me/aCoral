@@ -30,5 +30,7 @@ typedef struct{
     acoral_func_point *section_route;///<段执行函数列表
     void **section_args;///<段执行函数参数
 }acoral_timed_policy_data_t;
+
 void acoral_timed_task(void *args);
+void timed_policy_init(void);
 #endif
