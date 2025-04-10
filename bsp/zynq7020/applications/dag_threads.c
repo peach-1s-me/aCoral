@@ -118,7 +118,7 @@ void dag_func_4(void *args)
 #endif
 }
 acoral_func_point dag_func_4_prev[1] = {dag_func_2};
-acoral_dag_user_node dag_func_4_node =
+acoral_dag_user_node dag_func_4_node = 
 {
     .prev_route = dag_func_4_prev,
     .prev_count = 1,
@@ -127,6 +127,7 @@ acoral_dag_user_node dag_func_4_node =
     .processor = 1,
     .prio = 16
 };
+
 
 // Node 5
 void dag_func_5(void *args)

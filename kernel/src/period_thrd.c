@@ -172,7 +172,7 @@ static void period_policy_thread_release(acoral_thread_t *thread)
 static void period_time_deal()
 {
 #if (MEASURE_SCHED_PERIOD == 1)
-    acoral_u8 is_valid_measure = 0;
+    acoral_u8 is_valid_measure = 1; /* 统计所有的，这个作废 */
     /*  #error "hihihi" */
     cal_time_start();
 #endif

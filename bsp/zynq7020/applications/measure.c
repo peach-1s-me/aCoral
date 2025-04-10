@@ -89,13 +89,13 @@ void push_during(during_buffer_t *buf, double during)
     }
     else
     {
-        acoral_print("ERROR: during(%f) bigger than SINGLE_MEASURE_MAX_TIME(%u)\r\n", during,SINGLE_MEASURE_MAX_TIME);
+        acoral_print("ERROR: during%d(%f) bigger than SINGLE_MEASURE_MAX_TIME(%u)\r\n", (acoral_32)during, during,SINGLE_MEASURE_MAX_TIME);
     }
 }
 
 #if (MEASURE_CONSEXT_SWITCH == 1)
 
-#define SWITCH_TIMES            100000
+#define SWITCH_TIMES            1000
 
 extern acoral_u8 start_measure_context_switch;
 
@@ -113,51 +113,26 @@ void just_switch_0(void *args)
     acoral_print("js0 enter\r\n");
     while(1)
     {
-        if(context_switch_buffer.record_num == SWITCH_TIMES)
+        if(context_switch_buffer.record_num >= SWITCH_TIMES)
         {
             start_measure_context_switch = 0;
             measure_done("context switch", &context_switch_buffer);
             break;
-        }
-
-        acoral_enter_critical();
-        acoral_thread_change_prio_self(MEASURE_TASK_PRIO + 1);
-        acoral_thread_change_prio_by_id(js1_id, MEASURE_TASK_PRIO);
-        acoral_exit_critical();
-        if(1 == start_measure_context_switch)
-        {
-            double during = cal_time_end();
-            if(during > 0)
-            {
-                push_during(&context_switch_buffer, during);   
-            }
         }
     }
 }
 
 void just_switch_1(void *args)
 {
-    acoral_print("js1 enter\r\n");
-    while(1)
+    if (1 == start_measure_context_switch)
     {
-        if(context_switch_buffer.record_num == SWITCH_TIMES)
+        double during = cal_time_end();
+        if (during > 0.0)
         {
-            start_measure_context_switch = 0;
-            measure_done("context switch", &context_switch_buffer);
-            break;
-        }
-
-        acoral_enter_critical();
-        acoral_thread_change_prio_self(MEASURE_TASK_PRIO + 1);
-        acoral_thread_change_prio_by_id(js0_id, MEASURE_TASK_PRIO);
-        acoral_exit_critical();
-        if(1 == start_measure_context_switch)
-        {
-            double during = cal_time_end();
-            if(during > 0)
-            {
-                push_during(&context_switch_buffer, during);   
-            }
+            // acoral_print("push ");
+            // print_float(during, 4, 10);
+            // acoral_print("\r\n");
+            push_during(&context_switch_buffer, during);
         }
     }
 }
@@ -167,7 +142,7 @@ void measure_consext_switch(void)
     acoral_print("[measure] create measure threads\r\n");
     acoral_comm_policy_data_t p_data;
     p_data.cpu=acoral_current_cpu;
-    p_data.prio=MEASURE_TASK_PRIO;
+    p_data.prio=MEASURE_TASK_PRIO + 1;
     js0_id=acoral_create_thread(
                 just_switch_0,
                 MEASURE_TASK_STACK_SIZE,
@@ -183,16 +158,18 @@ void measure_consext_switch(void)
     {
         while(1);
     }
-    p_data.cpu=acoral_current_cpu;
-    p_data.prio=MEASURE_TASK_PRIO;
+    acoral_period_policy_data_t period_priv_data;
+    period_priv_data.cpu = acoral_current_cpu;
+    period_priv_data.prio = MEASURE_TASK_PRIO;
+    period_priv_data.time = 5;
     js1_id=acoral_create_thread(
                 just_switch_1,
                 MEASURE_TASK_STACK_SIZE,
                 NULL,
                 "just_switch_1",
                 NULL,
-                ACORAL_SCHED_POLICY_COMM,
-                &p_data,
+                ACORAL_SCHED_POLICY_PERIOD,
+                &period_priv_data,
                 NULL,
                 NULL
             );
@@ -208,7 +185,7 @@ void measure_consext_switch(void)
 
 #if (MEASURE_MOVE_THREAD == 1)
 
-#define MOVE_TIMES            100000
+#define MOVE_TIMES            1000
 
 during_buffer_t move_buffer = {
     .during = {0},
@@ -228,6 +205,8 @@ void empty_entry(void *args)
 void move_thread(void *args)
 {
     acoral_print("measure move enter\r\n");
+
+    acoral_thread_t * ep_task = (acoral_thread_t *)acoral_get_res_by_id(ep_id);
     while(1)
     {
         if (move_buffer.record_num == MOVE_TIMES)
@@ -237,22 +216,26 @@ void move_thread(void *args)
         }
 
         acoral_enter_critical();
-        if(((acoral_thread_t *)acoral_get_res_by_id(ep_id))->cpu == 0)
+        if(ep_task->cpu == 0)
         {
             cal_time_start();
-        	acoral_moveto_thread_by_id(ep_id, 1);
+        	acoral_moveto_thread(ep_task, 1);
         }
         else
         {
             cal_time_start();
-        	acoral_moveto_thread_by_id(ep_id, 0);
+        	acoral_moveto_thread(ep_task, 0);
         }
         acoral_exit_critical();
         double during = cal_time_end();
         if (during > 0)
         {
+            // acoral_print("push ");
+            // print_float(during, 4, 10);
+            // acoral_print("\r\n");
             push_during(&move_buffer, during);
         }
+        acoral_delay_ms(5);
     }
 }
 
@@ -300,7 +283,7 @@ void measure_move_thread()
 
 #if (MEASURE_SCHEDULE == 1)
 
-    #define SCHEDULE_TIMES            10000
+    #define SCHEDULE_TIMES            1000
 
     during_buffer_t sched_buffer = {
         .during = {0},
@@ -424,7 +407,7 @@ void measure_schedule(void)
             while (1);
         }
 
-        #define PERIOD_THREAD_NUM 5
+        #define PERIOD_THREAD_NUM 3
 
         acoral_id epp_id[PERIOD_THREAD_NUM] = {-1};
 
@@ -434,6 +417,7 @@ void measure_schedule(void)
         period_priv_data.prio=MEASURE_TASK_PRIO;
         period_priv_data.time=2;
         acoral_u8 i=0;
+        acoral_enter_critical();
         for(i=0; i<PERIOD_THREAD_NUM; i++)
         {
             epp_id[i]=acoral_create_thread(
@@ -452,6 +436,8 @@ void measure_schedule(void)
                 while(1);
             }
         }
+        acoral_print("%d period thread created\r\n", PERIOD_THREAD_NUM);
+        acoral_exit_critical();
     #elif (MEASURE_SCHED_DAG == 1)
         acoral_print("measure dag schedule\r\n");
         dag_decode();
