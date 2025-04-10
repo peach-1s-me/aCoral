@@ -45,7 +45,9 @@ void acoral_tick_queue_add(acoral_queue_t *queue, acoral_list_t *tnode)
     {
         tick = tick - tmp->value;
         if (tick < 0)
+        {
             break;
+        }
     }
 
     tnode->value = tick_tmp;           /* 恢复暂存的值 */
@@ -103,9 +105,13 @@ void acoral_prio_queue_add(acoral_queue_t *queue, acoral_list_t *pnode)
     for (tmp = head->next; tmp != head; tmp = tmp->next) /* 比较寻找添加位置 */
     {
         if (tmp->value > pnode->value)
+        {
             break;
+        }
         if (tmp == tmp->next)
+        {
             break;
+        }
     }
     acoral_list_add(pnode, tmp->prev); /* 添加节点 */
 #ifdef CFG_SMP
