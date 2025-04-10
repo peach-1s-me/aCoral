@@ -19,9 +19,9 @@
  * mem configuration
  */
 ///内存配置：伙伴系统使能
-#define CFG_MEM_BUDDY 1
+#define CFG_MEM_BUDDY
 ///内存配置：二级内存使能
-#define CFG_MEM_VOL 1
+#define CFG_MEM_VOL
 ///内存配置：可任意分配内存大小
 #define CFG_MEM_VOL_SIZE (327680)
 
@@ -66,7 +66,7 @@
 /*
  * User configuration
  */
-#if 1
+#if 0
 ///用户配置: 周期任务测试案例 Period Threads Ctrl
 #define CFG_PERIOD_THREADS_ENABLE
 #define CFG_PERIOD_THREADS_PRINT_ENABLE
@@ -89,7 +89,7 @@
 // #define CFG_TRACE_THREADS_SWITCH_ENABLE
 
 #ifdef CFG_TRACE_THREADS_SWITCH_ENABLE
-#define CFG_TRACE_THREADS_SWITCH_WITH_SIM_ENABLE
+// #define CFG_TRACE_THREADS_SWITCH_WITH_SIM_ENABLE
 #endif
 
 #ifdef CFG_TRACE_THREADS_SWITCH_WITH_SIM_ENABLE
@@ -115,14 +115,14 @@
 /// 开销测试相关 start
 /* note: can only choose one */
 #define MEASURE_CONSEXT_SWITCH      0   /* 上下文切换测试 */
-#define MEASURE_MOVE_THREAD         0   /* 线程切换测试 */
-#define MEASURE_SCHEDULE            0   /* 调度测试 */
+#define MEASURE_MOVE_THREAD         0   /* 核间迁移测试 */
+#define MEASURE_SCHEDULE            1   /* 调度测试 */
 
 #if (MEASURE_SCHEDULE == 1)
     /* note: can only choose one */
-    #define MEASURE_SCHED_PERIOD    0   /* 周期调度策略 */
+    #define MEASURE_SCHED_PERIOD    1   /* 周期调度策略 */
     #define MEASURE_SCHED_DAG       0   /* dag调度策略 */
-    #define MEASURE_SCHED_TIMED     1   /* 时间确定调度策略 */
+    #define MEASURE_SCHED_TIMED     0   /* 时间确定调度策略 */
         #if (MEASURE_SCHED_TIMED == 1)
             #define CFG_TIMED_THREADS_ENABLE
             #undef CFG_TIMED_THREADS_PRINT_ENABLE

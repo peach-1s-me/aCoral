@@ -22,6 +22,8 @@
 #include "print.h"
 #include "xscugic.h"
 
+#include "calculate_time.h"
+
 XScuGic        int_ctrl[CFG_MAX_CPU];       /* 中断系统控制结构体实例 */
 XScuGic_Config int_gic_config[CFG_MAX_CPU]; /* 中断系统gic配置结构体实例 */
 
@@ -161,5 +163,8 @@ void acoral_intr_exit()
        !acoral_sched_is_lock)
     {
         hal_irq_switch[acoral_current_cpu] = 1;
+#if (MEASURE_CONSEXT_SWITCH == 1)
+        cal_time_start();
+#endif
     }
 }

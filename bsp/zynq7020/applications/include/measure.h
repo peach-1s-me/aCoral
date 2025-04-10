@@ -17,7 +17,7 @@
 #ifndef _MEASURE_H
 #define _MEASURE_H
 
-#define SINGLE_MEASURE_MAX_TIME       1000   /* 每次测量的最长时间数据 */
+#define SINGLE_MEASURE_MAX_TIME       1000000   /* 每次测量的最长时间数据 */
 
 #define TIME_UNIT_US    0
 #define TIME_UNIT_MS    1

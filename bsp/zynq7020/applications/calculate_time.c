@@ -20,6 +20,8 @@
 #define MAX_STRNG_LEN   300
 #define CAT_FLOAT_LONG  42
 
+#define CALCULATE_NOT_STRICT 1 /* 为 1 时 start 和 end 必须成对出现，否则重复调用 start 可以覆盖初始值为 0 重新计数 */
+
 void print_float(double num, acoral_u8 keep, acoral_32 width)
 {
     /* cat_float_t : [+/- 1.18 * 10^-38, +/- 3.4 * 10^38], 算上符号, 小数点和末尾符号一共 42 个字符 */
@@ -172,14 +174,14 @@ double toc(void)
    return elapsed_time;
 }
 
-acoral_u8 cal_flag = 0;
+acoral_u8 is_caculating = 0; /* 计算中 */
 void cal_time_start()
 {
-   if(cal_flag == 0)
-   {
-       tic();
-       cal_flag = 1;
-   }
+    if (CALCULATE_NOT_STRICT ||  (is_caculating == 0))
+    {
+        tic();
+        is_caculating = 1;
+    }
 }
 
 /**
@@ -191,10 +193,10 @@ void cal_time_start()
 double cal_time_end()
 {
     double ret = -1.0;
-    if(cal_flag == 1)
+    if(CALCULATE_NOT_STRICT || (is_caculating == 1))
     {
        ret = toc();
-       cal_flag = 0;
+       is_caculating = 0;
     }
     return ret;
 }
