@@ -49,7 +49,9 @@ void acoral_cpu_set_active(acoral_u32 cpu)
  */
 acoral_u32 acoral_get_idlest_cpu(void)
 {
-    acoral_u32 cpu, i, count = 0xffffffff;
+    acoral_u32 cpu = 0;
+#if 0
+    acoral_u32 i, count = 0xffffffff;
     acoral_rdy_queue_t *rdy_queue;
 
     for (i = 0; i < CFG_MAX_CPU; i++)
@@ -61,6 +63,7 @@ acoral_u32 acoral_get_idlest_cpu(void)
             cpu = i;
         }
     }
+#endif
     return cpu;
 }
 
@@ -72,7 +75,9 @@ acoral_u32 acoral_get_idlest_cpu(void)
  */
 acoral_u32 acoral_get_idle_maskcpu(acoral_u32 cpu_mask)
 {
-    acoral_u32 cpu, i, count = 0xffffffff;
+    acoral_u32 cpu = 0;
+#if 0
+    acoral_u32 i, count = 0xffffffff;
     acoral_rdy_queue_t *rdy_queue;
 
     for(i = 0, cpu = 0;i < CFG_MAX_CPU; i++)
@@ -84,5 +89,6 @@ acoral_u32 acoral_get_idle_maskcpu(acoral_u32 cpu_mask)
             cpu = i;
         }
     }
+#endif
     return cpu;
 }

@@ -66,7 +66,7 @@
 /*
  * User configuration
  */
-#if 0
+#if 1
 ///用户配置: 周期任务测试案例 Period Threads Ctrl
 #define CFG_PERIOD_THREADS_ENABLE
 #define CFG_PERIOD_THREADS_PRINT_ENABLE
@@ -116,7 +116,7 @@
 /* note: can only choose one */
 #define MEASURE_CONSEXT_SWITCH      0   /* 上下文切换测试 */
 #define MEASURE_MOVE_THREAD         0   /* 核间迁移测试 */
-#define MEASURE_SCHEDULE            1   /* 调度测试 */
+#define MEASURE_SCHEDULE            0   /* 调度测试 */
 
 #if (MEASURE_SCHEDULE == 1)
     /* note: can only choose one */

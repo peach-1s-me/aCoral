@@ -14,7 +14,7 @@
 .global HAL_INTR_ENABLE
 .global HAL_INTR_DISABLE_SAVE
 .global HAL_INTR_RESTORE
-.extern running_thread
+.extern acoral_running_thread
 .extern acoral_switch_context
 .extern hal_irq_switch
 
@@ -28,7 +28,7 @@
     bl      HAL_GET_CURRENT_CPU
     mov     r1, #4
     mul     r0, r0, r1
-    ldr     r1, =running_thread
+    ldr     r1, =acoral_running_thread
     add     r1, r1, r0
     ldr     r0, [r1]
     add     r0, r0, #4
@@ -40,7 +40,7 @@
     bl      HAL_GET_CURRENT_CPU
     mov     r1, #4
     mul     r0, r0, r1
-    ldr     r1, =running_thread
+    ldr     r1, =acoral_running_thread
     add     r1, r1, r0
     ldr     r0, [r1]
     add     r0, r0, #4
