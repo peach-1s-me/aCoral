@@ -79,7 +79,7 @@ err_t client_recv_callback(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_
 
 static struct netif client_netif;
 
-static cat_ringbuffer_t lwip_tcp_client_rb;
+static ringbuffer_t lwip_tcp_client_rb;
 static acoral_u8 lwip_tcp_client_rb_space[RCV_RB_SIZE];
 
 void lwip_client_init(void)
@@ -148,7 +148,7 @@ static void _lwip_client_init(void *args)
     print_ip_settings(&ipaddr, &netmask, &gw);
 
     /* 初始化环形缓冲区 */
-    cat_ringbuffer_init(&lwip_tcp_client_rb, lwip_tcp_client_rb_space, RCV_RB_SIZE);
+    ringbuffer_init(&lwip_tcp_client_rb, lwip_tcp_client_rb_space, RCV_RB_SIZE);
 
     start_client_background();
 
@@ -259,7 +259,7 @@ size_t lwip_client_read(
 )
 {
 #if 0
-    acoral_u32 result = cat_ringbuffer_get_more(&lwip_tcp_client_rb, buf, len);
+    acoral_u32 result = ringbuffer_get_more(&lwip_tcp_client_rb, buf, len);
 
     if(result != len)
     {
@@ -280,7 +280,7 @@ size_t lwip_client_read(
         ((acoral_get_ticks() - starttime_ms) <= timeout)
     )
     {   
-        acoral_u32 result = cat_ringbuffer_get(&lwip_tcp_client_rb, buf+wrote);
+        acoral_u32 result = ringbuffer_get(&lwip_tcp_client_rb, buf+wrote);
 
         if(result != len)
         {
@@ -485,7 +485,7 @@ err_t client_recv_callback(void *arg, struct tcp_pcb *tpcb,
     acoral_u8 buf[512];
     MEMCPY(buf, p->payload, p->len);
 
-    acoral_u32 result = cat_ringbuffer_put_more(&lwip_tcp_client_rb, buf, p->len);
+    acoral_u32 result = ringbuffer_put_more(&lwip_tcp_client_rb, buf, p->len);
 
     if(result != 0)
     {
