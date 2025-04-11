@@ -253,6 +253,7 @@ void period_policy_init(void)
 {
     acoral_tick_queue_init(&period_time_queue); /* 初始化周期队列 */
 
+    acoral_list_init(&period_policy.list);
     period_policy.type                  = ACORAL_SCHED_POLICY_PERIOD;
     period_policy.policy_thread_init    = period_policy_thread_init;
     period_policy.policy_thread_release = period_policy_thread_release;

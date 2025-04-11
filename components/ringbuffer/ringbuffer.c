@@ -21,16 +21,6 @@
 #define RB_EOK 0
 #define RB_ERR -1
 
-/* 错误断言 */
-#define RB_ASSERT(_expr)                                                              \
-    do {                                                                              \
-        if (!(_expr))                                                                 \
-        {                                                                             \
-            acoral_print("%s:%d %s assert failed !\r\n", __FILE__, __LINE__, #_expr); \
-            while (1);                                                                \
-        }                                                                             \
-    } while (0)
-
 /* 是否为2^n */
 #define RB_IS_POWER_OF_TWO(_num) \
     ((_num & (_num - 1)) == 0)
@@ -54,11 +44,11 @@ void ringbuffer_init(
     acoral_u32    buffer_size
 )
 {
-    RB_ASSERT(NULL != p_ringbuffer);
-    RB_ASSERT(NULL != p_buffer_space);
-    RB_ASSERT(buffer_size >= MIN_RINGBUFFER_SIZE);
+    ACORAL_ASSERT(NULL != p_ringbuffer);
+    ACORAL_ASSERT(NULL != p_buffer_space);
+    ACORAL_ASSERT(buffer_size >= MIN_RINGBUFFER_SIZE);
     /* 如果要使用ring_mask来代替取余操作实现循环，buffer大小必须为2的n次方 */
-    RB_ASSERT(1 == (RB_IS_POWER_OF_TWO(buffer_size)));
+    ACORAL_ASSERT(1 == (RB_IS_POWER_OF_TWO(buffer_size)));
 
     p_ringbuffer->p_buffer = p_buffer_space;
     p_ringbuffer->ring_mask = buffer_size - 1;
@@ -73,7 +63,7 @@ void ringbuffer_init(
  */
 void ringbuffer_clear(ringbuffer_t *p_ringbuffer)
 {
-    RB_ASSERT(NULL != p_ringbuffer);
+    ACORAL_ASSERT(NULL != p_ringbuffer);
 
     p_ringbuffer->tail_index = 0;
     p_ringbuffer->head_index = 0;

@@ -310,6 +310,7 @@ void timed_policy_init(void)
     {
         acoral_tick_queue_init(&timed_time_queue[cpu]);//初始化时间确定性线程队列
     }
+    acoral_list_init(&timed_policy.list);
     timed_policy.type=ACORAL_SCHED_POLICY_TIMED;
     timed_policy.policy_thread_init=timed_policy_thread_init;
     timed_policy.policy_thread_release=timed_policy_thread_release;
