@@ -54,7 +54,7 @@
  */
 typedef union
 {
-    acoral_id id;       /* 资源id */
+    acoral_id  id;      /* 资源id */
     acoral_u16 next_id; /* 下个资源id */
 } acoral_res_t;
 
@@ -73,16 +73,16 @@ typedef struct
  */
 typedef struct
 {
-    acoral_u32 type;            /* 类型 */
-    acoral_u32 size;            /* 单个资源内存大小 */
-    acoral_u32 num_per_pool;    /* 每个池的资源数量 */
-    acoral_u32 num;             /* 用于运行中 */
-    acoral_u32 max_pools;       /* 最大池数量 */
-    acoral_queue_t total_pools; /* 所有池队列 */
-    acoral_queue_t free_pools;  /* 空闲池队列 */
-    acoral_res_api_t *api;      /* 资源api */
-    acoral_spinlock_t lock;     /* 自旋锁 */
-    acoral_u8 *name;            /* 名称 */
+    acoral_u32        type;         /* 类型 */
+    acoral_u32        size;         /* 单个资源内存大小 */
+    acoral_u32        num_per_pool; /* 每个池的资源数量 */
+    acoral_u32        num;          /* 用于运行中 */
+    acoral_u32        max_pools;    /* 最大池数量 */
+    acoral_queue_t    total_pools;  /* 所有池队列 */
+    acoral_queue_t    free_pools;   /* 空闲池队列 */
+    acoral_res_api_t *api;          /* 资源api */
+    acoral_spinlock_t lock;         /* 自旋锁 */
+    acoral_u8        *name;         /* 名称 */
 } acoral_pool_ctrl_t;
 
 /**
@@ -91,16 +91,16 @@ typedef struct
  */
 typedef struct
 {
-    void *base_adr;           /* 这个有两个作用，在为空闲的时候，它指向下一个pool，否则为它管理的资源的基地址 */
-    void *res_free;           /* 首个空闲资源指针 */
-    acoral_id id;             /* 内存池id */
-    acoral_u32 size;          /* 单个资源内存大小 */
-    acoral_u32 num;           /* 池中资源数量 */
-    acoral_u32 free_num;      /* 池中空闲资源数量 */
-    acoral_pool_ctrl_t *ctrl; /* 内存池控制块 */
-    acoral_list_t total_list; /* 所有池链表 */
-    acoral_list_t free_list;  /* 空闲池链表 */
-    acoral_spinlock_t lock;   /* 自旋锁 */
+    void               *base_adr;   /* 这个有两个作用，在为空闲的时候，它指向下一个pool，否则为它管理的资源的基地址 */
+    void               *res_free;   /* 首个空闲资源指针 */
+    acoral_id           id;         /* 内存池id */
+    acoral_u32          size;       /* 单个资源内存大小 */
+    acoral_u32          num;        /* 池中资源数量 */
+    acoral_u32          free_num;   /* 池中空闲资源数量 */
+    acoral_pool_ctrl_t *ctrl;       /* 内存池控制块 */
+    acoral_list_t       total_list; /* 所有池链表 */
+    acoral_list_t       free_list;  /* 空闲池链表 */
+    acoral_spinlock_t   lock;       /* 自旋锁 */
 } acoral_pool_t;
 
 acoral_err acoral_create_pool(acoral_pool_ctrl_t *pool_ctrl);
