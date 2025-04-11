@@ -241,7 +241,7 @@ static void timed_time_deal()
 #if (MEASURE_SCHED_TIMED == 1)
             is_valid_measure = 1;
 #endif
-            if(last_timed_thread[cpu] == running_thread[cpu])//当前运行的线程还没停止
+            if(last_timed_thread[cpu] == acoral_cur_thread)//当前运行的线程还没停止
             {
                 private_data=last_timed_thread[cpu]->private_data;//读取当前线程私有数据
                 acoral_suspend_thread(last_timed_thread[cpu]);//挂起当前运行线程
