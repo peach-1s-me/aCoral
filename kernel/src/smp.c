@@ -15,7 +15,6 @@
  */
 #include "acoral.h"
 
-
 #define IDLE_STACK_SIZE 128  /* idle线程栈大小 */
 #define DAEM_STACK_SIZE 256  /* 资源回收线程栈大小 */
 #define INIT_STACK_SIZE 2048 /* init线程栈大小 */
