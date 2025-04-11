@@ -22,6 +22,9 @@
  */
 void acoral_list_add(acoral_list_t *new, acoral_list_t *head)
 {
+    /* 新链表节点不应该在任何链表中 */
+    ACORAL_ASSERT(new->next == new);
+    ACORAL_ASSERT(new->prev == new);
 #ifdef CFG_SMP
 	acoral_list_t *temp_next = head->next;
     acoral_spin_lock(&new->lock);
@@ -55,6 +58,9 @@ void acoral_list_add(acoral_list_t *new, acoral_list_t *head)
  */
 void acoral_list_add_tail(acoral_list_t *new, acoral_list_t *head)
 {
+    /* 新链表节点不应该在任何链表中 */
+    ACORAL_ASSERT(new->next == new);
+    ACORAL_ASSERT(new->prev == new);
 #ifdef CFG_SMP
 	acoral_list_t *temp_prev = head->prev;
     acoral_spin_lock(&new->lock);

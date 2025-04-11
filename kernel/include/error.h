@@ -16,6 +16,16 @@
 #ifndef KERNEL_ERROR_H
 #define KERNEL_ERROR_H
 
+/* 错误断言 */
+#define ACORAL_ASSERT(_expr)                                                          \
+    do {                                                                              \
+        if (!(_expr))                                                                 \
+        {                                                                             \
+            acoral_print("%s:%d %s assert failed !\r\n", __FILE__, __LINE__, #_expr); \
+            while (1);                                                                \
+        }                                                                             \
+    } while (0)
+
 /**
  * @brief 内核层错误枚举
  * 
