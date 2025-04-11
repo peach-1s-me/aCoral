@@ -8,6 +8,8 @@
         "lib.h": "c",
         "policy.h": "c",
         "hal.h": "c",
-        "calculate_time.h": "c"
+        "calculate_time.h": "c",
+        "config.h": "c",
+        "smp.h": "c"
     }
 }

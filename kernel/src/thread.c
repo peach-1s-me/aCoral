@@ -19,6 +19,7 @@
 #include <queue.h>
 #include <lsched.h>
 #include <cpu.h>
+#include <smp.h>
 #include <error.h>
 #include <timer.h>
 #include <mem.h>
@@ -34,8 +35,6 @@
 #include <print.h>
 ///全部线程队列
 acoral_queue_t acoral_threads_queue;
-///释放队列，即需要进行回收的线程队列
-acoral_queue_t acoral_release_queue;
 ///线程内存池api结构体实例
 acoral_res_api_t thread_api;
 ///线程内存池控制结构体实例
@@ -374,7 +373,9 @@ acoral_err acoral_prerelease_thread(acoral_thread_t *thread)
 {
     acoral_thread_t *daem;
     thread->state=ACORAL_THREAD_STATE_EXIT;
-    acoral_fifo_queue_add(&acoral_release_queue, &thread->pending);//添加线程到释放队列
+    acoral_release_queue_add(&thread->pending); /* 添加线程到释放队列 */
+
+    acoral_id daemon_id = get_daemon_id();
     daem=(acoral_thread_t *)acoral_get_res_by_id(daemon_id);
     return acoral_rdy_thread(daem);//唤醒daemon线程来回收
 }

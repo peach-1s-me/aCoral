@@ -70,7 +70,7 @@ void init(void *args)
     /*系统时钟初始化*/
     acoral_ticks_init();
     
-    acoral_sched_enable=true;
+    acoral_set_sched_start(true);
 
     /*软件延时初始化*/
 #ifdef CFG_SOFT_DELAY
