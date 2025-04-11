@@ -15,6 +15,7 @@
  */
 #ifndef KERNEL_ERROR_H
 #define KERNEL_ERROR_H
+#include "print.h"
 
 /* 错误断言 */
 #define ACORAL_ASSERT(_expr)                                                          \

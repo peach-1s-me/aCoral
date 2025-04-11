@@ -320,10 +320,14 @@ static void acoral_pools_init(void)
         pool->base_adr = (void *)&acoral_pools[i + 1];
         pool->id       = i;
         pool++;
+        acoral_list_init(&pool->total_list);
+        acoral_list_init(&pool->free_list);
         acoral_spin_init(&pool->lock);
     }
     pool->base_adr       = (void *)0;
     acoral_free_res_pool = &acoral_pools[0];
+    acoral_list_init(&acoral_free_res_pool->total_list);
+    acoral_list_init(&acoral_free_res_pool->free_list);
     acoral_spin_init(&acoral_free_res_pool->lock);
 }
 

@@ -14,6 +14,7 @@
  *         <tr><td>v2.0 <td>饶洪江 <td>2025-04-01 <td>规范代码风格
  */
 #include "list.h"
+#include "error.h"
 /**
  * @brief 添加链表节点（尾部添加）
  * 

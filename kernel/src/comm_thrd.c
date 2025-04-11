@@ -73,6 +73,7 @@ static acoral_id comm_policy_thread_init(
  */
 void comm_policy_init(void)
 {
+    acoral_list_init(&acoral_comm_policy.list);
     acoral_comm_policy.type                  = ACORAL_SCHED_POLICY_COMM;
     acoral_comm_policy.policy_thread_init    = comm_policy_thread_init;
     acoral_comm_policy.policy_thread_release = NULL;
