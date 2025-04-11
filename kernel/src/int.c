@@ -160,11 +160,11 @@ void acoral_intr_entry(acoral_u32 ulICCIAR)
 void acoral_intr_exit()
 {
     if (
-        acoral_sched_enable    && /* 已经开始调度 */
-        acoral_need_sched()    && /* 需要调度 */
-       !acoral_intr_nesting    && /* 不处于中断中 */
-       !acoral_sched_is_lock()    /* 调度锁未上锁 */
-   )
+        acoral_sched_is_start() && /* 已经开始调度 */
+        acoral_need_sched()     && /* 需要调度 */
+       !acoral_intr_nesting     && /* 不处于中断中 */
+       !acoral_sched_is_lock()     /* 调度锁未上锁 */
+    )
     {
         hal_irq_switch[acoral_current_cpu] = 1;
 #if (MEASURE_CONSEXT_SWITCH == 1)

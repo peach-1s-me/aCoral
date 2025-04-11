@@ -352,10 +352,10 @@ acoral_u8 start_measure_context_switch = 0; /* 开始上下文切换的标志 */
 void acoral_sched(void)
 {
     if (
-         acoral_sched_enable    && /* 已经开始调度 */
-         acoral_need_sched()    && /* 需要调度 */
-        !acoral_intr_nesting    && /* 不处于中断中 */
-        !acoral_sched_is_lock()    /* 调度锁未上锁 */
+         acoral_sched_is_start() && /* 已经开始调度 */
+         acoral_need_sched()     && /* 需要调度 */
+        !acoral_intr_nesting     && /* 不处于中断中 */
+        !acoral_sched_is_lock()     /* 调度锁未上锁 */
     )
     {
 #if (measure_consext_switch == 1)

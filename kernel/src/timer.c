@@ -86,7 +86,7 @@ void acoral_ticks_handler(void *CallBackRef)
             acoral_print("\r\n----------OS Time: %ds----------\r\n", seconds);
         }
 #endif
-        if(acoral_sched_enable==true)
+        if(acoral_sched_is_start()==true)
         {
             time_delay_deal();//延时链表处理
             acoral_policy_time_deal();//调度处理
