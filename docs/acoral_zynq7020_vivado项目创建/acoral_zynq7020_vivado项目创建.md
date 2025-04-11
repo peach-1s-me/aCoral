@@ -195,7 +195,7 @@ xc7z045ffg900-2
 
 ![image-20240304001414959](attachments/image-20240304001414959.png)
 
-![[acoral_zynq7020_vivado项目创建--20250328.png]]
+![](attachments/acoral_zynq7020_vivado项目创建--20250411.png)
 #### 2.3.4 添加库
 
 ![image-20240304002042010](attachments/image-20240304002042010.png)
