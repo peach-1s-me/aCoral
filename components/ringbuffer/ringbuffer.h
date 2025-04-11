@@ -55,7 +55,7 @@ acoral_u32 ringbuffer_get_more(
  * @brief 检查环形缓冲区是否已满
  *
  * @param  p_ringbuffer     环形缓冲区结构体指针
- * @return acoral_u8      1：已满
+ * @return acoral_u8        1：已满
  *                          0：未满
  */
 static inline acoral_u8 ringbuffer_is_full(ringbuffer_t *p_ringbuffer)
@@ -78,7 +78,7 @@ static inline acoral_u8 ringbuffer_is_full(ringbuffer_t *p_ringbuffer)
  * @brief 检查环形缓冲区是否为空
  *
  * @param  p_ringbuffer     环形缓冲区结构体指针
- * @return acoral_u8      1：非空
+ * @return acoral_u8        1：非空
  *                          0；为空
  */
 static inline acoral_u8 ringbuffer_is_empty(ringbuffer_t *p_ringbuffer)
