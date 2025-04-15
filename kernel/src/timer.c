@@ -136,6 +136,23 @@ void acoral_time_delay_queue_add(void *new)
     acoral_exit_critical();
     return;
 }
+
+/**
+ * @brief 将线程移出延时队列
+ *
+ * @param old 要移出的线程
+ */
+
+void acoral_time_delay_queue_del(void *old)
+{
+    acoral_thread_t *thread = (acoral_thread_t *)old;
+    acoral_enter_critical();
+    acoral_tick_queue_del(&time_delay_queue, &thread->delaying);
+    acoral_rdy_thread(thread);
+    acoral_exit_critical();
+    return;
+}
+
 /**
  * @brief 延时处理函数
  *

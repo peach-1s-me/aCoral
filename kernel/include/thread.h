@@ -12,6 +12,7 @@
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-07-14 <td>增加注释
  *         <tr><td>v1.1 <td>胡博文 <td>2022-09-26 <td>错误头文件相关改动
+ *         <tr><td>v1.2 <td>饶洪江 <td>2025-03-14 <td>在线程控制块中增加线程错误检测字段
  */
 #ifndef KERNEL_THREAD_H
 #define KERNEL_THREAD_H
@@ -92,6 +93,7 @@ typedef struct{
 #endif
     acoral_u8 state;///<线程状态
     acoral_u8 prio;///<线程优先级
+    acoral_err err;///<线程错误检测
     acoral_u32 cpu;///<线程所在cpu
     acoral_u32 cpu_mask;///<线程cpu屏蔽
     acoral_u8 policy;///<线程调度策略
