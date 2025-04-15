@@ -45,6 +45,7 @@ typedef enum
     KR_THREAD_ERR_STATE,    /* 线程错误：线程状态不符 */
     KR_THREAD_ERR_CPU,      /* 线程错误：cpu错误 */
     KR_THREAD_ERR_PRIO,     /* 线程错误：prio错误 */
+    KR_THREAD_ERR_TIMEOUT,  /* 线程错误：超时错误 */
     KR_THREAD_ERR_UNDEF,    /* 线程错误：未定义 */
     KR_IPC_ERR_NULL,        /* 线程通信错误：空指针 */
     KR_IPC_ERR_TYPE,        /* 线程通信错误：类型错误 */
@@ -54,6 +55,9 @@ typedef enum
     KR_IPC_ERR_TIMEOUT,     /* 线程通信错误：超时 */
     KR_IPC_ERR_THREAD,      /* 线程通信错误：无线程 */
     KR_IPC_ERR_CPU,         /* 线程通信错误：cpu错误 */
+    KR_IPC_ERR_MSG_SIZE,    /* 线程通信错误：消息大小错误 */
+    KR_IPC_ERR_MQ_FULL,     /* 线程通信错误：消息队列已满 */
+    KR_IPC_ERR_MQ_EMPTY,    /* 线程通信错误：消息队列为空 */
     KR_OK = 0               /* OK */
 } acoral_kernel_error_t;
 #endif

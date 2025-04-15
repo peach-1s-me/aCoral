@@ -11,12 +11,13 @@
  * <table>
  * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  * <tr><td>v1.0 <td>胡博文 <td>- <td>内容
+ * <tr><td>v1.0 <td>饶洪江 <td>2025/03/17 <td>测试消息队列
  * </table>
  */
 #include <acoral.h>
 #include <cmd.h>
 acoral_id test_thread_task[6];
-acoral_id test_ipc_task[4];
+acoral_id test_ipc_task[6];
 
 void test_suspend()
 {
@@ -71,6 +72,43 @@ void test_sem()
     acoral_print("test_sem get by cpu%d\r\n", cpu);
     while(!sem_flag[cpu]);
     acoral_sem_post(my_sem);
+}
+
+acoral_mq_t *my_mq;
+void send_msg()
+{
+	acoral_8 send_buffer[20] = "This is a msg!!!";
+    acoral_err ret;
+	acoral_u32 cpu = acoral_current_cpu;
+	acoral_print("[send_msg] run on cpu%d\r\n", cpu);
+    while (1)
+    {
+    	ret = acoral_mq_send(my_mq, send_buffer, sizeof(send_buffer));
+        ret = acoral_mq_send_wait(my_mq, send_buffer, sizeof(send_buffer), 20);
+        if (KR_OK != ret)
+        {
+            acoral_print("ERRER : [%d]\r\n", ret);
+        }
+        acoral_print("[send_msg] send completed\r\n");
+        acoral_delay_ms(1000);
+    }
+}
+void recv_msg()
+{
+	acoral_8 recv_buffer[20] = "mq no msg";
+    acoral_err ret;
+	acoral_u32 cpu = acoral_current_cpu;
+	acoral_print("[recv_msg] run on cpu%d\r\n", cpu);
+    while (1)
+    {
+        ret = acoral_mq_recv(my_mq, recv_buffer, sizeof(recv_buffer), 50);
+        if (KR_OK != ret)
+        {
+            acoral_print("ERRER : [%d]\r\n", ret);
+        }
+        acoral_print("[recv_msg] %s\r\n", recv_buffer);
+        acoral_delay_ms(1000);
+    }
 }
 
 acoral_dpcp_t *dpcp_sd = NULL,*dpcp_qspi = NULL;
@@ -336,6 +374,35 @@ void test_sem_start()
                                         NULL);
 }
 
+void test_mq_start()
+{
+    my_mq = acoral_mq_create(4,24);
+    acoral_comm_policy_data_t comm_policy_data;
+    comm_policy_data.cpu = 0;
+    comm_policy_data.prio = 11;
+    test_ipc_task[4] = acoral_create_thread(send_msg,
+                                        512,
+                                        NULL,
+                                        "send_msg",
+                                        NULL,
+                                        ACORAL_SCHED_POLICY_COMM,
+                                        &comm_policy_data,
+                                        NULL,
+                                        NULL);
+    comm_policy_data.cpu = 0;
+    comm_policy_data.prio = 11;
+    test_ipc_task[5] = acoral_create_thread(recv_msg,
+                                        512,
+                                        NULL,
+                                        "recv_msg",
+                                        NULL,
+                                        ACORAL_SCHED_POLICY_COMM,
+                                        &comm_policy_data,
+                                        NULL,
+                                        NULL);
+}
+
+
 void test_shell()
 {
     ash_cmd_register(&asn_cmd);
@@ -350,10 +417,11 @@ void test_start()
 {
 //    test_suspend_start();
 //    test_rdy_start();
-    // test_move_start();
+//    test_move_start();
 //    test_delay_thread_start();
 //    test_mutex_start();
 //    test_sem_start();
+    test_mq_start();
 //    test_shell();
 //    test_admin_ctl_start();
 }

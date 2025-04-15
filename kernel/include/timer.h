@@ -31,6 +31,7 @@ acoral_time acoral_get_ticks(void);
 void acoral_set_ticks(acoral_time time);
 void time_delay_deal(void);
 void acoral_time_delay_queue_add(void *new);
+void acoral_time_delay_queue_del(void *old);
 acoral_ipc_t *acoral_ipc_alloc(void);
 void acoral_time_sys_init(void);
 #endif

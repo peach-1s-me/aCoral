@@ -11,6 +11,7 @@
         "calculate_time.h": "c",
         "config.h": "c",
         "smp.h": "c",
-        "lsched.h": "c"
+        "lsched.h": "c",
+        "acoral.h": "c"
     }
 }

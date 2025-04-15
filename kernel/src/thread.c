@@ -12,14 +12,14 @@
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-07-14 <td>增加注释
  *         <tr><td>v1.1 <td>胡博文 <td>2022-09-26 <td>错误头文件相关改动
- *         <tr><td>v2.0 <td>胡博文 <td>2023-09-09 <td>去除no_sched
+ *         <tr><td>v1.2 <td>胡博文 <td>2023-09-09 <td>去除no_sched
+ *         <tr><td>v1.3 <td>饶洪江 <td>2025-03-14 <td>在线程控制块中增加线程错误检测字段
  */
 #include <type.h>
 #include <hal.h>
 #include <queue.h>
 #include <lsched.h>
 #include <cpu.h>
-#include <smp.h>
 #include <error.h>
 #include <timer.h>
 #include <mem.h>
@@ -430,7 +430,7 @@ acoral_err acoral_delay_thread(acoral_thread_t* thread,acoral_time time)
 
 /**
  * @brief 延时自己
- * 
+ *        注意：该函数会调用acoral_suspend_thread
  * @param time 
  * @return acoral_err 错误检测
  */
@@ -565,6 +565,9 @@ acoral_err acoral_thread_init(acoral_thread_t *thread,void (*route)(void *args),
     //继承父线程的console_id
     thread->console_id=acoral_cur_thread->console_id;
 
+    //初始化无错误
+    thread->err = KR_OK;
+
     //初始化各个链表节点
     acoral_vlist_init(&thread->timing, 0);
     acoral_vlist_init(&thread->delaying, 0);
@@ -630,6 +633,3 @@ void acoral_thread_sys_init(void)
     acoral_sched_mechanism_init();
     acoral_sched_policy_init();
 }
-
-
-

@@ -11,6 +11,7 @@
  *     <table>
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-06-26 <td>增加注释
+ *         <tr><td>v1.1 <td>饶洪江 <td>2025-03-13 <td>增加ACORAL_ALIGN
  */
 #include <stddef.h>
 #include <stdarg.h>
@@ -91,4 +92,6 @@ typedef acoral_char * acoral_va_list;
 #endif
 ///找到某成员属于的结构体的起始地址
 #define container_of(ptr, type, member) ((type *)((acoral_8 *)ptr - offsetof(type,member)))
+///返回输入size对齐到特定宽度align的最小值
+#define ACORAL_ALIGN(size, align)           (((size) + (align) - 1) & ~((align) - 1))
 #endif
