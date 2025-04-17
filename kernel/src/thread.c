@@ -35,9 +35,9 @@
 
 #include "print.h"
 
-acoral_queue_t     acoral_threads_queue; /* 全部线程队列 */
+acoral_queue_t     acoral_threads_queue;    /* 全部线程队列 */
 
-static acoral_res_api_t   thread_api;              /* 线程内存池api结构体实例 */
+static acoral_res_api_t   thread_api;       /* 线程内存池api结构体实例 */
 static acoral_pool_ctrl_t thread_pool_ctrl; /* 线程内存池控制结构体实例 */
 
 /**********************************kill******************************************/
