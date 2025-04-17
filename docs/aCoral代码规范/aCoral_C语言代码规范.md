@@ -508,6 +508,16 @@ int strncmp(const char *s1, const char *s2, size_t n);
 * 宏中包含不完整语句时，可以例外。比如用宏封装 for 循环的条件部分。
 
 ### <span id="6.3">6.3 函数宏式的其他规则</span>
+
+函数式宏的参数大于等于3时可不按照函数的方式处理，分段时合理且不影响可读性即可
+
+```c
+#define acoral_create_thread(route, stack_size, args, name, \
+                             stack, policy, policy_data, data, hook) \
+    create_thread_by_policy(route, stack_size, args, name, \
+                            stack, policy, policy_data, data, hook);
+```
+
 不允许把带副作用的表达式，如`num++`，作为参数传递给函数式宏。
 
 不允许把函数调用作为参数传递给函数式宏。
