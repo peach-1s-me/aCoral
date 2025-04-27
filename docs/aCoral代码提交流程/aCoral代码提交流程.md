@@ -15,6 +15,11 @@ fork aCoral到自己的仓库, 后文将以 fork-aCoral 称呼自己账号下的
 git clone git@github.com:[你的githubID]/aCoral.git
 ```
 
+进入仓库目录
+```
+cd aCoral
+```
+
 切换到 develop 分支
 使用 GitBash 或其他可以使用 git 的终端打开克隆到本地的 fork-aCoral 目录
 
@@ -54,6 +59,8 @@ test     新增或更新测试
 推送到远程 fork-aCoral 仓库
 
 push前注意更新一下 fork-aCoral, 此时主 aCoral 仓库如果有更新, 可能和本地代码有冲突
+## 5. 更新fork-aCoral
+
 ![](images/4-1-update_repo.png)
 
 然后拉取一下代码:
@@ -62,12 +69,13 @@ git pull --rebase
 ```
 == 必须加 --rebase 忘加了就想办法回退 ==
 
+## 6. 提交到远程仓库fork-aCoral
 最后再push
 ```
 git push
 ```
 
-## 5.提交 Pull Request
+## 7. 提交 Pull Request
 
 在 github 自己的 fork-aCoral 下提交PR
 
