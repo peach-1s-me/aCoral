@@ -15,6 +15,11 @@ fork aCoral到自己的仓库, 后文将以 fork-aCoral 称呼自己账号下的
 git clone git@github.com:[你的githubID]/aCoral.git
 ```
 
+进入仓库目录
+```
+cd aCoral
+```
+
 切换到 develop 分支
 使用 GitBash 或其他可以使用 git 的终端打开克隆到本地的 fork-aCoral 目录
 
