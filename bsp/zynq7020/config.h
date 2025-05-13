@@ -66,7 +66,7 @@
 /*
  * User configuration
  */
-#if 1
+#if 0
 ///用户配置: 周期任务测试案例 Period Threads Ctrl
 #define CFG_PERIOD_THREADS_ENABLE
 #define CFG_PERIOD_THREADS_PRINT_ENABLE
@@ -165,7 +165,7 @@
 ///用户配置：dpcp
 #define CFG_DPCP
 ///用户配置：shell
-// #define CFG_SHELL
+#define CFG_SHELL
 //#undef CFG_SHELL
 ///用户配置：FIFO队列为0
 #define CFG_FIFO_QUEUE 0
