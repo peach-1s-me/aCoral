@@ -106,6 +106,7 @@ void parse_args(acoral_char *argstr, acoral_32 *argc_p, acoral_char **argv, acor
  */
 void ash_cmd_register(acoral_ash_cmd_t *cmd)
 {
+    acoral_list_init(&cmd->list);
     acoral_fifo_queue_add(&acoral_ash_cmd_queue, &cmd->list);
 }
 /**
@@ -370,6 +371,8 @@ acoral_ash_cmd_t cd_cmd =
 };
 /***********************************file system cmd******************************/
 
+extern acoral_ash_cmd_t test_tlsf_cmd;
+
 /**
  * @brief ash终端命令初始化
  * 
@@ -380,4 +383,5 @@ void ash_cmd_init()
     ash_cmd_register(&ls_cmd);
     ash_cmd_register(&cd_cmd);
     ash_cmd_register(&help_cmd);
+    ash_cmd_register(&test_tlsf_cmd);
 }

@@ -12,6 +12,8 @@
         "config.h": "c",
         "smp.h": "c",
         "lsched.h": "c",
-        "acoral.h": "c"
+        "acoral.h": "c",
+        "print.h": "c",
+        "kernel.h": "c"
     }
 }

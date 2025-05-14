@@ -81,3 +81,22 @@ void test_tlsf()
     acoral_print("Test OK !\n");
     return;
 }
+
+#include "cmd.h"
+void do_test_tlsf(acoral_32 argc,acoral_char **argv)
+{
+    (void)argc;
+    (void)argv;
+
+    test_tlsf();
+}
+/**
+ * @brief help命令结构体
+ * 
+ */
+acoral_ash_cmd_t test_tlsf_cmd =
+{
+    .name = "test_tlsf",
+    .exe = do_test_tlsf,
+    .comment = "test tlsf algrithm"
+};
