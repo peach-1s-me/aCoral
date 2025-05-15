@@ -7,9 +7,11 @@
  * @par 修订历史
  *
  * <table>
- * <tr><td>v1.0 <td>胡旋   <td>2025-05-07<td>创建
- * <tr><td>v1.1 <td>文佳源 <td>2025-05-13<td>规范代码
- *
+ *     <table>
+ *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
+ *         <tr><td>v1.0 <td>胡旋   <td>2025-05-07<td>初步完成tlsf移植
+ *         <tr><td>v1.1 <td>文佳源 <td>2025-05-13<td>规范代码
+ *         <tr><td>v1.2 <td>饶洪江 <td>2025-05-14<td>修改错误定义，规范代码
  * </table>
  */
 
@@ -38,13 +40,12 @@
 /* 实际使用的FLI数量（24） */
 #define REAL_FLI (MAX_FLI - FLI_OFFSET)
 #define SMALL_BLOCK (128)
+
 /* 最小块与头部开销 */
 /* 最小内存块大小（8字节） */
 #define MIN_BLOCK_SIZE (0x8)
-// #define MIN_BLOCK_SIZE	(sizeof (FREE_PTR_T))
 /* 头部元数据开销（8字节） */
 #define BHDR_OVERHEAD (0x10 - MIN_BLOCK_SIZE)
-// #define BHDR_OVERHEAD	(sizeof (BHDR) - MIN_BLOCK_SIZE)
 
 /*内存池校验*/
 #define TLSF_SIGNATURE (0x2A59FA59)
@@ -58,9 +59,8 @@
 /*空闲链表遍历*/
 #define GET_NEXT_BLOCK(_addr, _r) ((BHDR *)((acoral_8 *)(_addr) + (_r)))
 
-// #define ROUNDUP(_x, _v)				((((acoral_u32)(~(_x)) + 1) & ((_v)-1)) + (_x))
-
 #define PREV_STATE (0x2)
+
 /*块状态宏*/
 /* 当前块空闲标记 */
 #define FREE_BLOCK (0x1)
@@ -110,24 +110,33 @@ typedef tlsf_struct_t TLSF;
 
 acoral_u32 tlsf_mempool_addr_g; /*定义内存池地址*/
 static u32 tlsf_table[256];
-int OSErrNo = 0; /*初始化错误号*/
+acoral_err tlsf_err = KR_OK; /*初始化错误号*/
 
 static void tlsf_setbit(acoral_u32 nr, acoral_u32 *addr);
 static void tlsf_clearbit(acoral_u32 nr, acoral_u32 *addr);
 static acoral_u32 tlsf_get_lsbit(acoral_u32 i);
 static acoral_u32 tlsf_get_msbit(acoral_u32 i);
-// static void InsertBlock(BHDR * _b, TLSF * _tlsf,I32 _fl,I32 _sl);
 static void tlsf_mapping_search(acoral_u32 *_r, acoral_u32 *_fl, acoral_u32 *_sl);
 static void tlsf_mapping_insert(acoral_u32 _r, acoral_u32 *_fl, acoral_u32 *_sl);
 static BHDR *tlsf_find_suitableblock(TLSF *_tlsf, acoral_u32 *_fl, acoral_u32 *_sl);
 
 /**
+ * @brief 获取tlsf_err
+ * 
+ * @return acoral_err 错误号
+ */
+acoral_err get_tlsf_err(void)
+{
+    return tlsf_err;
+}
+
+/**
  * @brief 从 TLSF 的空闲内存块链表中提取一个内存块（BHDR），并更新链表和位图信息
  *
- * @param _b 指向要提取的内存块（BHDR 结构体）
+ * @param _b    指向要提取的内存块（BHDR 结构体）
  * @param _tlsf 指向 TLSF 管理器的指针
- * @param _fl 第一级索引（First Level Index），表示内存块的大小范围
- * @param _sl 第二级索引（Second Level Index），表示内存块在某个大小范围内的具体位置
+ * @param _fl   第一级索引（First Level Index），表示内存块的大小范围
+ * @param _sl   第二级索引（Second Level Index），表示内存块在某个大小范围内的具体位置
  */
 void tlsf_mem_extractblock_hdr(BHDR *_b, TLSF *_tlsf, acoral_u32 _fl, acoral_u32 _sl)
 {
@@ -147,13 +156,14 @@ void tlsf_mem_extractblock_hdr(BHDR *_b, TLSF *_tlsf, acoral_u32 _fl, acoral_u32
     (_b)->ptr.free_ptr.prev = NULL;
     (_b)->ptr.free_ptr.next = NULL;
 }
+
 /**
  * @brief 从 TLSF 的空闲内存块链表中提取一个指定的内存块（_b），并更新链表和位图信息。
  *
- * @param _b 指向要提取的内存块（BHDR结构体）。
+ * @param _b    指向要提取的内存块（BHDR结构体）。
  * @param _tlsf 指向 TLSF 管理器的指针。
- * @param _fl 第一级索引（First Level Index），表示内存块的大小范围。
- * @param _sl 第二级索引（Second Level Index），表示内存块在某个大小范围内的具体位置。
+ * @param _fl   第一级索引（First Level Index），表示内存块的大小范围。
+ * @param _sl   第二级索引（Second Level Index），表示内存块在某个大小范围内的具体位置。
  */
 void tlsf_mem_extractblock(BHDR *_b, TLSF *_tlsf, acoral_u32 _fl, acoral_u32 _sl)
 {
@@ -161,10 +171,12 @@ void tlsf_mem_extractblock(BHDR *_b, TLSF *_tlsf, acoral_u32 _fl, acoral_u32 _sl
     {
         (_b)->ptr.free_ptr.next->ptr.free_ptr.prev = (_b)->ptr.free_ptr.prev;
     }
+
     if ((_b)->ptr.free_ptr.prev)
     {
         (_b)->ptr.free_ptr.prev->ptr.free_ptr.next = (_b)->ptr.free_ptr.next;
     }
+
     if ((_tlsf)->matrix[(_fl)][(_sl)] == (_b))
     {
         (_tlsf)->matrix[(_fl)][(_sl)] = (_b)->ptr.free_ptr.next;
@@ -180,13 +192,14 @@ void tlsf_mem_extractblock(BHDR *_b, TLSF *_tlsf, acoral_u32 _fl, acoral_u32 _sl
     (_b)->ptr.free_ptr.prev = NULL;
     (_b)->ptr.free_ptr.next = NULL;
 }
+
 /**
  * @brief 将一个内存块（_b）插入到 TLSF 的空闲内存块链表中，并更新链表和位图信息。
  *
- * @param _b 指向要插入的内存块（BHDR 结构体）
+ * @param _b    指向要插入的内存块（BHDR 结构体）
  * @param _tlsf 指向 TLSF 管理器的指针。
- * @param _fl 第一级索引（First Level Index），表示内存块的大小范围。
- * @param _sl 第二级索引（Second Level Index），表示内存块在某个大小范围内的具体位置。
+ * @param _fl   第一级索引（First Level Index），表示内存块的大小范围。
+ * @param _sl   第二级索引（Second Level Index），表示内存块在某个大小范围内的具体位置。
  */
 void tlsf_mem_insertblock(BHDR *_b, TLSF *_tlsf, acoral_u32 _fl, acoral_u32 _sl)
 {
@@ -205,7 +218,7 @@ void tlsf_mem_insertblock(BHDR *_b, TLSF *_tlsf, acoral_u32 _fl, acoral_u32 _sl)
  * @brief 计算一个无符号 32 位整数（acoral_u32）中最低有效位（LSB）的位置。
  *
  *@param i 一个无符号 32 位整数。
- *@return 最低有效位的位置（从 0 开始计数）
+ *@return acoral_u32 最低有效位的位置（从 0 开始计数）
  */
 acoral_u32 tlsf_get_lsbit(acoral_u32 i)
 {
@@ -234,7 +247,7 @@ acoral_u32 tlsf_get_msbit(acoral_u32 i)
 /**
  * @brief 设置一个无符号 32 位整数数组（acoral_u32 *addr）中某一位（nr）为 1。
  *
- *@param nr 要设置的位的位置（从 0 开始计数）。
+ *@param nr   要设置的位的位置（从 0 开始计数）。
  *@param addr 指向无符号 32 位整数数组的指针。
  */
 void tlsf_setbit(acoral_u32 nr, acoral_u32 *addr)
@@ -245,7 +258,7 @@ void tlsf_setbit(acoral_u32 nr, acoral_u32 *addr)
 /**
  *@brief 清除一个无符号 32 位整数数组 addr 中某一位（nr）的值，即将该位设置为 0。
  *
- *@param nr 要清除的位的位置（从 0 开始计数）。
+ *@param nr   要清除的位的位置（从 0 开始计数）。
  *@param addr 指向无符号 32 位整数数组的指针。
  */
 void tlsf_clearbit(acoral_u32 nr, acoral_u32 *addr)
@@ -256,7 +269,7 @@ void tlsf_clearbit(acoral_u32 nr, acoral_u32 *addr)
 /**
  *@brief 将请求的内存大小（_r）映射到 TLSF 的两级索引（_fl 和 _sl）中。
  *
- *@param _r 指向请求的内存大小的指针。
+ *@param _r  指向请求的内存大小的指针。
  *@param _fl 指向第一级索引（First Level Index）的指针。
  *@param _sl 指向第二级索引（Second Level Index）的指针。
  */
@@ -283,7 +296,7 @@ void tlsf_mapping_search(acoral_u32 *_r, acoral_u32 *_fl, acoral_u32 *_sl)
 /**
  *@brief 将请求的内存大小（_r）映射到 TLSF 的两级索引（_fl 和 _sl）中。
  *
- *@param _r 指向请求的内存大小的指针。
+ *@param _r  指向请求的内存大小的指针。
  *@param _fl 指向第一级索引（First Level Index）的指针。
  *@param _sl 指向第二级索引（Second Level Index）的指针。
  */
@@ -306,9 +319,9 @@ void tlsf_mapping_insert(acoral_u32 _r, acoral_u32 *_fl, acoral_u32 *_sl)
  *@brief 在TLSF的空闲内存块链表中查找一个合适的内存块。
  *
  *@param _tlsf 指向 TLSF 管理器的指针。
- *@param _fl 指向第一级索引（First Level Index）的指针。
- *@param _sl 指向第二级索引（Second Level Index）的指针。
- *@return 指向合适内存块的指针（BHDR *），如果未找到合适的内存块，则返回 Nacoral_uLL。
+ *@param _fl   指向第一级索引（First Level Index）的指针。
+ *@param _sl   指向第二级索引（Second Level Index）的指针。
+ *@return BHDR 指向合适内存块的指针（BHDR *），如果未找到合适的内存块，则返回 Nacoral_uLL。
  */
 BHDR *tlsf_find_suitableblock(TLSF *_tlsf, acoral_u32 *_fl, acoral_u32 *_sl)
 {
@@ -343,9 +356,9 @@ BHDR *tlsf_find_suitableblock(TLSF *_tlsf, acoral_u32 *_fl, acoral_u32 *_sl)
 /**
  *@brief 初始化内存池和 TLSF 相关的数据结构。
  *
- *@return STATU 类型，表示初始化是否成功。
+ *@return acoral_err 初始化是否成功。
  */
-STATUS tlsf_memlib_init(void)
+acoral_err tlsf_memlib_init(void)
 {
     BHDR *b, *lb;
     acoral_u32 i, j, k;
@@ -353,8 +366,8 @@ STATUS tlsf_memlib_init(void)
     acoral_u32 size;
     acoral_u32 pool;
 
-    pool = ACORAL_CFGMemPoolAddr;
-    size = ACORAL_CFGMemPoolSize;
+    pool = ACORAL_CFG_MEM_POOl_ADDR;
+    size = ACORAL_CFG_MEM_POOL_SIZE;
 
     j = 1;
     k = 0;
@@ -382,9 +395,7 @@ STATUS tlsf_memlib_init(void)
     lb->prev_hdr = b;
     lb->size = 0x0 | USED_BLOCK | PREV_FREE;
 
-    tlsf_mem_free(b->ptr.buffer);
-
-    return OSOK;
+    return tlsf_mem_free(b->ptr.buffer);
 }
 
 /**
@@ -402,16 +413,14 @@ void *tlsf_mem_alloc(acoral_u32 size)
     tlsf = (TLSF *)tlsf_mempool_addr_g;
 
     size = (acoral_u32)((size < MIN_BLOCK_SIZE) ? MIN_BLOCK_SIZE : ROUNDUP_SIZE(size));
-
     tlsf_mapping_search(&size, &fl, &sl);
 
     acoral_intr_disable();
 
     b = tlsf_find_suitableblock(tlsf, &fl, &sl);
-
     if (b == (BHDR *)NULL)
     {
-        ACORAL_ERR_SET_ERRNO(KR_MEM_ERR_LESS);
+        tlsf_err = KR_MEM_ERR_LESS;
         acoral_intr_enable();
 
         return (void *)NULL; /* Not found */
@@ -447,7 +456,7 @@ void *tlsf_mem_alloc(acoral_u32 size)
  *
  *@param ptr 指向原有内存块的指针。
  *@param size 请求分配的内存大小。
- *@return 指向重新分配的内存块的指针（void *），如果分配失败则返回 NULL。
+ *@return void * 指向重新分配的内存块的指针，如果分配失败则返回 NULL。
  */
 
 void *tlsf_mem_realloc(void *ptr, acoral_u32 size)
@@ -467,6 +476,7 @@ void *tlsf_mem_realloc(void *ptr, acoral_u32 size)
         tlsf_mem_free(ptr);
         return NULL;
     }
+
     if (*(acoral_u32 *)((acoral_u32)ptr - 4) >= size)
     {
 
@@ -491,30 +501,29 @@ void *tlsf_mem_realloc(void *ptr, acoral_u32 size)
  *@brief 释放内存块并将其归还到内存池中。
  *
  *@param ptr 指向要释放的内存块的指针。
- *@return STATUS 类型，表示释放操作是否成功。
+ *@return acoral_err 表示释放操作是否成功。
  */
-STATUS tlsf_mem_free(void *ptr)
+acoral_err tlsf_mem_free(void *ptr)
 {
     TLSF *tlsf;
     BHDR *b, *tmp_b;
     acoral_u32 fl = 0, sl = 0;
 
     tlsf = (TLSF *)tlsf_mempool_addr_g;
-    // #ifdef __INT_OK__
-    //  oldlevel = Bsp_DisableInt(ALL_acoral_uSR_ISR);
+
     acoral_intr_disable(); /*关中断*/
-    // #endif
     if (ptr == (void *)NULL)
     {
-        ACORAL_ERR_SET_ERRNO(KR_MEM_ERR_MALLOC);
+        tlsf_err = KR_MEM_ERR_MALLOC;
         acoral_intr_enable(); /*开中断*/
-        return OSERROR;
+        return KR_MEM_ERR_MALLOC;
     }
 
     b = (BHDR *)((acoral_8 *)ptr - BHDR_OVERHEAD);
     b->size |= FREE_BLOCK;
     b->ptr.free_ptr.prev = NULL;
     b->ptr.free_ptr.next = NULL;
+
     tmp_b = GET_NEXT_BLOCK(b->ptr.buffer, b->size & BLOCK_SIZE);
     if ((tmp_b->size & FREE_BLOCK) != 0)
     {
@@ -540,7 +549,7 @@ STATUS tlsf_mem_free(void *ptr)
     tmp_b->prev_hdr = b;
 
     acoral_intr_enable();
-    return OSOK;
+    return KR_OK;
 }
 
 /**
@@ -549,16 +558,16 @@ STATUS tlsf_mem_free(void *ptr)
  *@param to 目标地址。
  *@param from 源地址。
  *@param size 要复制的字节数。
- *@return 返回目标地址（to）。
+ *@return void * 返回目标地址（to）。
  */
 void *tlsf_mem_cpy(void *to, const void *from, acoral_u32 size)
 {
-    acoral_u8 *dstend;
-    acoral_u8 *source;
-    acoral_u8 *destination;
+    acoral_u8  *dstend;
+    acoral_u8  *source;
+    acoral_u8  *destination;
     acoral_u32 *src;
     acoral_u32 *dst;
-    acoral_32 tmp;
+    acoral_32   tmp;
 
     source = (acoral_u8 *)from;
     destination = (acoral_u8 *)to;
@@ -595,15 +604,13 @@ void *tlsf_mem_cpy(void *to, const void *from, acoral_u32 size)
     else
     {
         /* backward copy */
-        dstend = destination;
+        dstend       = destination;
         destination += size - sizeof(acoral_8);
-        source += size - sizeof(acoral_8);
+        source      += size - sizeof(acoral_8);
 
         /* do byte copy if less than ten or alignment mismatch */
         if (!((size < 10) || (((acoral_u32)destination ^ (acoral_u32)source) & 0x3)))
-
         {
-
             /* if odd-aligned copy byte */
             while (((acoral_u32)destination + 1) & 0x3)
             {
@@ -637,7 +644,7 @@ void *tlsf_mem_cpy(void *to, const void *from, acoral_u32 size)
  *@param dst 目标内存区域的起始地址。
  *@param val 要设置的值（acoral_u8 类型）。
  *@param count 要设置的字节数。
- *@return 返回目标内存区域的起始地址（dst）。
+ *@return void * 返回目标内存区域的起始地址（dst）。
  */
 void *tlsf_mem_set(void *dst, acoral_u8 val, acoral_u32 count)
 {
@@ -651,7 +658,6 @@ void *tlsf_mem_set(void *dst, acoral_u8 val, acoral_u32 count)
 
     if (count > 10)
     {
-
         while ((acoral_u32)u8dst & 0x3)
         {
             *u8dst++ = val;
