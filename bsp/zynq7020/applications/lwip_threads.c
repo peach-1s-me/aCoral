@@ -48,8 +48,8 @@
 #define SERVER_IP0 192
 #define SERVER_IP1 168
 #define SERVER_IP2 1
-#define SERVER_IP3 3
-#define SERVER_PORT 7
+#define SERVER_IP3 12
+#define SERVER_PORT 8888
 
 /* 客户端IP */
 #define CLIENT_IP0 192
@@ -194,10 +194,10 @@ int start_server_application()
     }
 
     /* bind to specified @port */
-    err = tcp_bind(pcb, IP_ANY_TYPE, 7);
+    err = tcp_bind(pcb, IP_ANY_TYPE, SERVER_PORT);
     if (err != ERR_OK)
     {
-        xil_printf("Unable to bind to port %d: err = %d\n\r", 7, err);
+        xil_printf("Unable to bind to port %d: err = %d\n\r", SERVER_PORT, err);
         return -2;
     }
 
@@ -215,7 +215,7 @@ int start_server_application()
     /* specify callback to use for incoming connections */
     tcp_accept(pcb, accept_callback);
 
-    xil_printf("TCP echo server started @ port %d\n\r", 7);
+    xil_printf("TCP echo server started @ port %d\n\r", SERVER_PORT);
 
     return 0;
 }
@@ -358,13 +358,13 @@ int start_client_application(void)
 
     /* 指定连接成功回调函数 */
     // acoral_delay_ms(20000);
-    err = tcp_connect(pcb, &ipaddr, 7, tcp_connect_callback);
+    err = tcp_connect(pcb, &ipaddr, SERVER_PORT, tcp_connect_callback);
     while(err != ERR_OK)
     {
 #if 1
         xil_printf("[client] fail to connect to server, try to reconncect\r\n");
         acoral_delay_ms(1000);
-        err = tcp_connect(pcb, &ipaddr, 7, tcp_connect_callback);
+        err = tcp_connect(pcb, &ipaddr, SERVER_PORT, tcp_connect_callback);
 #endif
     }
 

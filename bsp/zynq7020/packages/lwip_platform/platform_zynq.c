@@ -46,7 +46,6 @@
  */
 
 #ifdef __arm__
-
 #include "xparameters.h"
 #include "xparameters_ps.h"	/* defines XPAR values */
 #include "xil_cache.h"

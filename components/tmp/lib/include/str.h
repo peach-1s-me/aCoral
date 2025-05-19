@@ -48,5 +48,7 @@ void *acoral_memscan(void * addr, acoral_32 c, acoral_u32 size);
 acoral_char *acoral_strstr(const acoral_char * s1,const acoral_char * s2);
 void *acoral_memchr(const void *s, acoral_32 c, acoral_u32 n);
 
+acoral_32 acoral_atoi(const char *src);
+
 #endif
 

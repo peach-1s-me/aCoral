@@ -177,6 +177,7 @@ xemac_add(struct netif *netif,
 #if defined (__arm__) || defined (__aarch64__)
 			case xemac_type_emacps:
 #ifdef XLWIP_CONFIG_INCLUDE_GEM
+                xil_printf("init xemac_type_emacps netif\r\n");
 				return netif_add(netif, ipaddr, netmask, gw,
 						(void*)(UINTPTR)mac_baseaddr,
 						xemacpsif_init,
