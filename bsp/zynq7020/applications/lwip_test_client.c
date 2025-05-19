@@ -14,6 +14,7 @@
  * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
  * </table>
  */
+#if 1
 #include "lwip_tcp_client.h"
 #include <stdio.h>
 
@@ -27,14 +28,13 @@ void lwip_test_client_thread_entry(void *args)
     char read_buffer[40];
     acoral_u8 err;
 
-    while(0 == is_connected_to_server)
-    {
-        acoral_print("waiting for connect to server...\r\n");
-        acoral_delay_ms(1000);
-    }
-
     while(1)
     {
+        while(0 == is_connected_to_server)
+        {
+            acoral_print("waiting for connect to server...\r\n");
+            acoral_delay_ms(1000);
+        }
         sprintf(write_buffer, "The sending count is [%d]", count++);
         lwip_client_write((acoral_u8 *)write_buffer, strlen(write_buffer), &err);
         if(0 != err)
@@ -47,7 +47,7 @@ void lwip_test_client_thread_entry(void *args)
         lwip_client_read((acoral_u8 *)read_buffer, strlen(write_buffer), 1, &err);
         if(0 != err)
         {
-            acoral_print("[ERROR] read error:err %d\r\n", err);
+            // acoral_print("[ERROR] read error:err %d\r\n", err);
         }
         else
         {
@@ -79,3 +79,4 @@ void lwip_app_thread_init(void)
             ;
     }
 }
+#endif

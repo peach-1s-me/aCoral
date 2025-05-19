@@ -12,7 +12,7 @@
  *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
  *         <tr><td>v1.0 <td>胡博文 <td>2022-09-21 <td>增加注释
  */
-#include <str.h>
+#include "str.h"
 
 acoral_u8 acoral_tolower(acoral_u8 c)
 {
@@ -629,4 +629,38 @@ void *acoral_memchr(const void *s, acoral_32 c, acoral_u32 n)
         }
     }
     return NULL;
+}
+
+/**
+ * @brief 字符串转整型
+ * 
+ * @param  src              字符串
+ * @return acoral_32        转换的整型数据（错误返回0）
+ */
+acoral_32 acoral_atoi(const char *src)
+{
+    acoral_32 ret = 0;
+    char sign = src[0];
+
+    if (('-' == *src) || ('+' == *src))
+    {
+        src++;
+    }
+    while ('\0' != *src)
+    {
+        if ((*src < '0') || (*src > '9'))
+        {
+            ret = 0;
+            while(1); /* TODO：改为相应的错误处理 */
+            break;
+        }
+        ret = ret * 10 + (*src - '0');
+        src++;
+    }
+    if ('-' == sign)
+    {
+        ret = -ret;
+    }
+
+    return ret;
 }

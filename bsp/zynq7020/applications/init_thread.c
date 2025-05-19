@@ -87,9 +87,11 @@ void init(void *args)
     /* 初始化mmu，！必须在网络等外设初始化前调用 */
     mmu_init();
 
+#if 1
     /* 初始化lwip demo应用 */
-    // lwip_app_thread_init();
-    // lwip_client_init();
+    lwip_client_init();
+    lwip_app_thread_init();
+#endif
     // lwip_app_thread_init();
     
 //    XScuGic_Connect( &int_ctrl[0], AXI_INTR_ID, (Xil_ExceptionHandler) axi_gpio_handler, ( void * ) &int_ctrl[0] );

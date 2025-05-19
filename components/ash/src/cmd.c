@@ -372,6 +372,10 @@ acoral_ash_cmd_t cd_cmd =
 /***********************************file system cmd******************************/
 
 extern acoral_ash_cmd_t test_tlsf_cmd;
+extern acoral_ash_cmd_t tcp_cli_ip_cmd;
+extern acoral_ash_cmd_t if_cmd;
+extern acoral_ash_cmd_t connect_server_cmd;
+extern acoral_ash_cmd_t close_cur_pcb_cmd;
 
 /**
  * @brief ash终端命令初始化
@@ -384,4 +388,8 @@ void ash_cmd_init()
     ash_cmd_register(&cd_cmd);
     ash_cmd_register(&help_cmd);
     ash_cmd_register(&test_tlsf_cmd);
+    ash_cmd_register(&tcp_cli_ip_cmd);
+    ash_cmd_register(&if_cmd);
+    ash_cmd_register(&connect_server_cmd);
+    ash_cmd_register(&close_cur_pcb_cmd);
 }

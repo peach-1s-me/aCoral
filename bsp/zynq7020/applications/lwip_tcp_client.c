@@ -8,12 +8,14 @@
  * Copyright (c) 2025
  * 
  * @par 修订历史
- * <table>
- * <tr><th>版本 <th>作者 <th>日期 <th>修改内容
- * <tr><td>v1.0 <td>文佳源 <td>2025-02-25 <td>内容
- * <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
- * </table>
+ *     <table>
+ *         <tr><th>版本 <th>作者 <th>日期 <th>修改内容
+ *         <tr><td>v1.0 <td>文佳源 <td>2025-02-25 <td>内容
+ *         <tr><td>v1.1 <td>饶洪江 <td>2025-03-27 <td>消除warning
+ *         <tr><td>v1.2 <td>文佳源 饶洪江 <td>2025-05-16 <td>增添LWIP相关命令行命令，注意：close函数中使用的tcp_abort
+ *     </table>
  */
+#if 1
 #include "acoral.h"
 #include "ringbuffer.h"
 
@@ -31,14 +33,14 @@
 #define SERVER_IP0 192
 #define SERVER_IP1 168
 #define SERVER_IP2 1
-#define SERVER_IP3 3
+#define SERVER_IP3 24
 #define SERVER_PORT 8888
 
 /* 客户端IP */
 #define CLIENT_IP0 192
 #define CLIENT_IP1 168
 #define CLIENT_IP2 1
-#define CLIENT_IP3 11 /* 不同的客户端设置不同的IP地址 */
+#define CLIENT_IP3 253 /* 不同的客户端设置不同的IP地址 */
 #define CLIENT_PORT 8
 
 /* 网关IP */
@@ -59,7 +61,7 @@
 void tcp_fasttmr(void);
 void tcp_slowtmr(void);
 
-struct tcp_pcb *client_pcb; /**< 作为客户端的pcb */
+struct tcp_pcb *client_pcb = NULL; /**< 作为客户端的pcb */
 struct netif *echo_netif;/* platform_zynq.c要用 */
 acoral_u8 is_connected_to_server = 0; /* 已连接上服务器 */
 
@@ -67,7 +69,9 @@ extern volatile int TcpFastTmrFlag;
 extern volatile int TcpSlowTmrFlag;
 
 static void _lwip_client_init(void *args);
+#if 0
 static void _lwip_client_loop_thread(void *args);
+#endif
 static acoral_32 lwip_deamon_init(void);
 static void lwip_deamon_entry(void *args);
 static void print_ip(char *msg, ip_addr_t *ip);
@@ -152,10 +156,10 @@ static void _lwip_client_init(void *args)
 
     start_client_background();
 
-#if 1
+#if 0
     acoral_print("[_lwip_app_client_init] create lwip loop\r\n");
     acoral_comm_policy_data_t p_data;
-    p_data.cpu = 1;  /* 指定运行的cpu */
+    p_data.cpu = 0;  /* 指定运行的cpu */
     p_data.prio = 4; /* 指定优先级 !比应用的优先级低 */
     acoral_id lc_id = acoral_create_thread(
         _lwip_client_loop_thread,
@@ -200,10 +204,12 @@ static void _lwip_client_init(void *args)
 #endif
 }
 
+#if 0
 static void _lwip_client_loop_thread(void *args)
 {
     while (1)
     {
+
         static int cnt = 0;
         if (TcpFastTmrFlag)
         {
@@ -217,8 +223,10 @@ static void _lwip_client_loop_thread(void *args)
             cnt++;
         }
         xemacif_input(echo_netif);
+
     }
 }
+#endif
 
 /**
  * @brief 客户端tcp写
@@ -251,6 +259,19 @@ size_t lwip_client_write(
     return real_write_len;
 }
 
+/**
+ * @brief 客户端tcp读
+ * 
+ * @param  buf              读的数据缓冲区
+ * @param  len              要读的长度
+ * @param  timeout          超时时间
+ * @param  errcode          错误代码,
+ *                          0:成功
+ *                          else:失败
+ * @return size_t           实际读的长度,
+ *                          len:成功
+ *                          else:失败
+ */
 size_t lwip_client_read(
     acoral_u8 *buf,
     size_t len,
@@ -282,7 +303,7 @@ size_t lwip_client_read(
     {   
         acoral_u32 result = ringbuffer_get(&lwip_tcp_client_rb, buf+wrote);
 
-        if(result != len)
+        if(result != 0)
         {
             *errcode = ERR_MEM;
             break;
@@ -293,6 +314,24 @@ size_t lwip_client_read(
 
     return wrote;
 #endif
+}
+
+/**
+ * @brief void
+ * 
+ * @return acoral_err 0：成功，其他：失败
+ */
+acoral_err lwip_client_close(void)
+{
+    acoral_err err = 0;
+    if(client_pcb != NULL)
+    {
+        acoral_print("close current connection\r\n");
+        is_connected_to_server = 0;
+        tcp_abort(client_pcb);
+        client_pcb = NULL;
+    }
+    return err;
 }
 
 /**
@@ -309,7 +348,7 @@ static acoral_32 lwip_deamon_init(void)
     acoral_period_policy_data_t *period_policy_data = (acoral_period_policy_data_t *)acoral_vol_malloc(sizeof(acoral_period_policy_data_t));
     // func 2
     period_policy_data->prio = 2;
-    period_policy_data->cpu = 1;
+    period_policy_data->cpu = 0;
     period_policy_data->time = 250; // 周期单位 ms
     acoral_id ld_id = acoral_create_thread(lwip_deamon_entry,
                                            4096,
@@ -340,6 +379,20 @@ void timer_callback(void);
 static void lwip_deamon_entry(void *args)
 {
     timer_callback();
+    // acoral_print("lwip deamon\r\n");
+    static int cnt = 0;
+    if (TcpFastTmrFlag)
+    {
+        tcp_fasttmr();
+        TcpFastTmrFlag = 0;
+    }
+    if (TcpSlowTmrFlag)
+    {
+        tcp_slowtmr();
+        TcpSlowTmrFlag = 0;
+        cnt++;
+    }
+    xemacif_input(echo_netif);
 }
 
 static void print_ip(char *msg, ip_addr_t *ip)
@@ -448,7 +501,7 @@ static err_t tcp_connect_callback(void *arg, struct tcp_pcb *newpcb, err_t err)
 
 static void connect_err_callback(void *arg, err_t err)
 {
-    xil_printf("[ERROR] fatal error accured\r\n");
+    xil_printf("[ERROR] fatal error accured: [%d]\r\n", err);
     /* 重新初始化客户端应用 */
 #if 0
     /* 这里重启会显示无法绑定同一个端口 */
@@ -487,7 +540,7 @@ err_t client_recv_callback(void *arg, struct tcp_pcb *tpcb,
 
     acoral_u32 result = ringbuffer_put_more(&lwip_tcp_client_rb, buf, p->len);
 
-    if(result != 0)
+    if (result != 0)
     {
         acoral_print("[ERROR] ringbuffer space not enough\r\n");
 
@@ -500,3 +553,244 @@ err_t client_recv_callback(void *arg, struct tcp_pcb *tpcb,
     return ret;
 }
 
+#ifdef CFG_SHELL
+#include "cmd.h"
+
+typedef struct
+{
+    acoral_u32 ip[4];
+    acoral_u32 mask[4];
+    acoral_u32 gw[4];
+} ip_cfg_t;
+
+/**
+ * @brief ip字符串转ip整型数组
+ * 
+ * @param dst 目标ip整型数组
+ * @param src 源ip字符串
+ * @return acoral_32 0：成功，其他：失败
+ */
+acoral_32 atoip(acoral_u32 *dst, char *src)
+{
+    char *p = src, *nextp = src;
+
+    int i = 0;
+    for(i = 0; i < 4; i++)
+    {
+        p = nextp;
+        while(*nextp != '\0' && *nextp != '.')
+        {
+            nextp++;     
+        }
+        if('.' == *nextp)
+        {
+            *nextp = '\0';
+            nextp++;
+
+            dst[i] = atoi(p);
+        }
+        else if('\0' == *nextp)
+        {
+            dst[i] = atoi(p);
+        }
+        else
+        {
+            if(i != 3)
+            {
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * @brief 修改client ip
+ * 
+ * @param argc 4
+ * @param argv ip mask gw
+ * @return void 
+ */
+void do_tcp_cli_ip(acoral_32 argc,acoral_char **argv)
+{
+    if(argc != 4)
+    {
+        acoral_print("usage: tcp_cli_ip [IP] [MASK] [GW]\n");
+        return;
+    }
+
+    ip_cfg_t cfg = {0};
+    acoral_32 res = 0;
+
+    res += atoip(cfg.ip,   argv[1]);
+    res += atoip(cfg.mask, argv[2]);
+    res += atoip(cfg.gw,   argv[3]);
+
+    acoral_print("cfg.ip  =%d.%d.%d.%d\r\n", cfg.ip[0], cfg.ip[1], cfg.ip[2], cfg.ip[3]);
+    acoral_print("cfg.mask=%d.%d.%d.%d\r\n", cfg.mask[0], cfg.mask[1], cfg.mask[2], cfg.mask[3]);
+    acoral_print("cfg.gw  =%d.%d.%d.%d\r\n", cfg.gw[0], cfg.gw[1], cfg.gw[2], cfg.gw[3]);
+
+    if(0 != res)
+    {
+        acoral_print("[ERROR]atoip fail\r\n");
+        return;
+    }
+
+    struct ip4_addr ip_new, mask_new, gw_new;
+    IP4_ADDR(&ip_new, cfg.ip[0], cfg.ip[1], cfg.ip[2], cfg.ip[3]);
+    IP4_ADDR(&mask_new, cfg.mask[0], cfg.mask[1], cfg.mask[2], cfg.mask[3]);
+    IP4_ADDR(&gw_new, cfg.gw[0], cfg.gw[1], cfg.gw[2], cfg.gw[3]);
+
+    if ((res = lwip_client_close()) != 0)
+    {
+        acoral_print("[ERROR] close pcb error: %d", res);
+        return;
+    }
+
+    netif_set_down(&client_netif);
+
+    netif_set_ipaddr(&client_netif,  &ip_new);
+    netif_set_netmask(&client_netif, &mask_new);
+    netif_set_gw(&client_netif,      &gw_new);
+
+    netif_set_up(&client_netif);
+
+    acoral_print("change ip success\r\n");
+}
+acoral_ash_cmd_t tcp_cli_ip_cmd =
+{
+    .name = "tcp_cli_ip",
+    .exe = do_tcp_cli_ip,
+    .comment = "change tcp client ip etc."
+};
+
+/**
+ * @brief 打印ip地址
+ * 
+ * @param argc 
+ * @param argv 
+ */
+void do_if(acoral_32 argc,acoral_char **argv)
+{
+    print_ip_settings(&client_netif.ip_addr, &client_netif.netmask, &client_netif.gw);
+}
+acoral_ash_cmd_t if_cmd =
+{
+    .name = "if",
+    .exe = do_if,
+    .comment = "show interface info"
+};
+
+/**
+ * @brief 连接目标服务器
+ * 
+ * @param argc 3
+ * @param argv ip port
+ */
+void do_connect_server(acoral_32 argc,acoral_char **argv)
+{
+    if(argc != 3)
+    {
+        acoral_print("usage: server_ip and server_port [IP] [PORT]\n");
+        return;
+    }
+
+    ip_cfg_t cfg = {0};
+    acoral_32 res = 0;
+
+    res = atoip(cfg.ip, argv[1]);
+    acoral_print("cfg.ip = %d.%d.%d.%d, port =%d\r\n", cfg.ip[0], cfg.ip[1], cfg.ip[2], cfg.ip[3], atoi(argv[2]));
+
+    if(0 != res)
+    {
+        acoral_print("[ERROR]atoip fail\r\n");
+        return;
+    }
+
+    /* 将目标服务器的IP写入一个结构体，为pc机本地连接IP地址 */
+    struct ip4_addr ip_server;
+    IP4_ADDR(&ip_server, cfg.ip[0], cfg.ip[1], cfg.ip[2], cfg.ip[3]);
+
+    if ((res = lwip_client_close()) != 0)
+    {
+        acoral_print("[ERROR] close pcb error: %d", res);
+        return;
+    }
+
+    struct tcp_pcb *pcb;
+    err_t err;
+
+    /* create new TCP PCB structure */
+    pcb = tcp_new_ip_type(IPADDR_TYPE_ANY);
+    if (NULL == pcb)
+    {
+        xil_printf("Error creating PCB. Out of Memory\n\r");
+        return;
+    }
+
+    /* bind to specified @port */
+    err = tcp_bind(pcb, IP_ANY_TYPE, CLIENT_PORT);
+    if (err != ERR_OK)
+    {
+        xil_printf("Unable to bind to port %d: err = %d\n\r", CLIENT_PORT, err);
+        return;
+    }
+
+    /* we do not need any arguments to callback functions */
+    tcp_arg(pcb, NULL);
+
+    /* listen for connections */
+    if (NULL == pcb)
+    {
+        xil_printf("Out of memory while tcp_listen\n\r");
+        return;
+    }
+
+    xil_printf("tcp client started\r\n");
+
+    /* 指定连接成功回调函数 */
+    err = tcp_connect(pcb, &ip_server, atoi(argv[2]), tcp_connect_callback);
+    while(err != ERR_OK)
+    {
+#if 1
+        xil_printf("[client] fail to connect to server, try to reconncect\r\n");
+        acoral_delay_ms(1000);
+        err = tcp_connect(pcb, &ip_server, atoi(argv[2]), tcp_connect_callback);
+#endif
+    }
+
+    tcp_err(pcb, connect_err_callback);
+
+    client_pcb = pcb;
+}
+
+acoral_ash_cmd_t connect_server_cmd =
+{
+    .name = "connect_server",
+    .exe = do_connect_server,
+    .comment = "connect server"
+};
+
+/**
+ * @brief 关闭当前pcb连接
+ * 
+ * @param argc 
+ * @param argv 
+ */
+void do_close_cur_pcb(acoral_32 argc,acoral_char **argv)
+{
+    int res = lwip_client_close();
+    if (res!= 0)
+    {
+        acoral_print("[ERROR] close pcb error: %d", res);
+    }
+}
+acoral_ash_cmd_t close_cur_pcb_cmd =
+{
+    .name = "close_cur_pcb",
+    .exe = do_close_cur_pcb,
+    .comment = "close current pcb"
+};
+#endif
+#endif
