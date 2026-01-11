@@ -13,8 +13,8 @@
  * <tr><td>v1.0 <td>文佳源 <td>2024-07-10 <td>内容
  * </table>
  */
-#ifndef _CACULATE_TIME_H
-#define _CACULATE_TIME_H
+#ifndef _CALCULATE_TIME_H
+#define _CALCULATE_TIME_H
 
 #define GTC_BASE 0xF8F00200
 #define GTC_CTRL    0x08
