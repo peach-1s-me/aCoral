@@ -500,7 +500,7 @@ int strncmp(const char *s1, const char *s2, size_t n);
 ```c
 #define FUNC(x)                           \
     do {                                  \
-        (void)printf("arg is %d\n", (x)); \
+        (void)acoral_print("arg is %d\n", (x)); \
         do_something((x));                \
     } while (0)
 ```
